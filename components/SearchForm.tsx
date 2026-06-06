@@ -59,7 +59,7 @@ export default function SearchForm() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Destination */}
         <div className="lg:col-span-3 relative">
-          <label className="block text-white/80 text-xs font-semibold uppercase tracking-wider mb-2">
+          <label className="block text-white/80 text-sm font-semibold uppercase tracking-wider mb-2">
             Where do you want to go?
           </label>
           <div className="relative">
@@ -74,7 +74,7 @@ export default function SearchForm() {
               onChange={(e) => handleDestinationChange(e.target.value)}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
               onFocus={() => form.destination.length > 1 && setShowSuggestions(true)}
-              className="pl-10 bg-black/20 border-white/30 text-white placeholder:text-white/60 focus:border-white focus:ring-white/20 h-12 rounded-xl"
+              className="pl-10 bg-black/20 border-white/30 text-white placeholder:text-white/60 focus:border-white focus:ring-white/20 h-12 rounded-xl md:text-sm text-base"
               autoComplete="off"
               required
             />
@@ -100,7 +100,7 @@ export default function SearchForm() {
 
         {/* Start Date */}
         <div>
-          <label className="block text-white/80 text-xs font-semibold uppercase tracking-wider mb-2">
+          <label className="block text-white/80 text-sm font-semibold uppercase tracking-wider mb-2">
             Departure Date
           </label>
           <div className="relative">
@@ -110,7 +110,7 @@ export default function SearchForm() {
               type="date"
               value={form.startDate}
               onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-              className="pl-10 bg-black/20 border-white/30 text-white focus:border-white h-12 rounded-xl [color-scheme:dark]"
+              className="pl-10 bg-black/20 border-white/30 text-white focus:border-white h-12 rounded-xl [color-scheme:dark] md:text-sm text-base"
               min={new Date().toISOString().split("T")[0]}
             />
           </div>
@@ -118,7 +118,7 @@ export default function SearchForm() {
 
         {/* End Date */}
         <div>
-          <label className="block text-white/80 text-xs font-semibold uppercase tracking-wider mb-2">
+          <label className="block text-white/80 text-sm font-semibold uppercase tracking-wider mb-2">
             Return Date
           </label>
           <div className="relative">
@@ -128,7 +128,7 @@ export default function SearchForm() {
               type="date"
               value={form.endDate}
               onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-              className="pl-10 bg-black/20 border-white/30 text-white focus:border-white h-12 rounded-xl [color-scheme:dark]"
+              className="pl-10 bg-black/20 border-white/30 text-white focus:border-white h-12 rounded-xl [color-scheme:dark] md:text-sm text-base"
               min={form.startDate || new Date().toISOString().split("T")[0]}
             />
           </div>
@@ -136,7 +136,7 @@ export default function SearchForm() {
 
         {/* Travelers */}
         <div>
-          <label className="block text-white/80 text-xs font-semibold uppercase tracking-wider mb-2">
+          <label className="block text-white/80 text-sm font-semibold uppercase tracking-wider mb-2">
             Travelers
           </label>
           <div className="relative">
@@ -147,7 +147,7 @@ export default function SearchForm() {
             >
               <SelectTrigger
                 id="travelers-select"
-                className="pl-10 bg-black/20 border-white/30 text-white h-12 rounded-xl focus:border-white data-[state=open]:border-white"
+                className="pl-10 bg-black/20 border-white/30 text-white h-12 rounded-xl focus:border-white data-[state=open]:border-white md:text-sm text-base"
               >
                 <SelectValue placeholder="Travelers" />
               </SelectTrigger>
@@ -164,7 +164,7 @@ export default function SearchForm() {
 
         {/* Budget */}
         <div>
-          <label className="block text-white/80 text-xs font-semibold uppercase tracking-wider mb-2">
+          <label className="block text-white/80 text-sm font-semibold uppercase tracking-wider mb-2">
             Max Budget (INR)
           </label>
           <div className="relative">
@@ -175,7 +175,7 @@ export default function SearchForm() {
               placeholder="e.g. 50000"
               value={form.budget}
               onChange={(e) => setForm({ ...form, budget: e.target.value })}
-              className="pl-10 bg-black/20 border-white/30 text-white placeholder:text-white/60 focus:border-white h-12 rounded-xl"
+              className="pl-10 bg-black/20 border-white/30 text-white placeholder:text-white/60 focus:border-white h-12 rounded-xl md:text-sm text-base"
               min="0"
               step="1000"
             />
@@ -201,13 +201,13 @@ export default function SearchForm() {
 
       {/* Popular quick picks */}
       <div className="mt-5 flex flex-wrap gap-2">
-        <span className="text-white/50 text-xs font-medium self-center">Popular:</span>
+        <span className="text-white/50 text-sm font-medium self-center">Popular:</span>
         {["Goa", "Bali", "Rajasthan", "Maldives", "Ladakh"].map((dest) => (
           <button
             key={dest}
             type="button"
             onClick={() => setForm({ ...form, destination: dest + ", " + (dest === "Bali" ? "Indonesia" : dest === "Maldives" ? "Maldives" : "India") })}
-            className="text-xs px-3 py-1.5 rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/50 hover:bg-white/10 transition-all duration-200"
+            className="text-sm px-3 py-1.5 rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/50 hover:bg-white/10 transition-all duration-200"
           >
             {dest}
           </button>
