@@ -121,9 +121,26 @@ export default function FeaturedDestinations() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {destinations.map((dest, idx) => (
+          {destinations.map((dest, idx) => {
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() + 7);
+            const endDate = new Date(startDate);
+            const days = parseInt(dest.duration.split("–")[0]) || 5;
+            endDate.setDate(endDate.getDate() + days);
+            
+            const budget = dest.priceFrom.replace(/[^\d]/g, "");
+            
+            const query = new URLSearchParams({
+              destination: `${dest.name}, ${dest.country}`,
+              startDate: startDate.toISOString().split("T")[0],
+              endDate: endDate.toISOString().split("T")[0],
+              travelers: "2",
+              budget: budget
+            }).toString();
+
+            return (
             <Link
-              href={`/results?destination=${encodeURIComponent(dest.name + ", " + dest.country)}`}
+              href={`/results?${query}`}
               key={dest.id}
               className="block group"
             >
@@ -211,7 +228,8 @@ export default function FeaturedDestinations() {
                 </div>
               </div>
             </Link>
-          ))}
+          );
+          })}
         </div>
 
         {/* CTA */}
