@@ -11,6 +11,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/utils/supabase/client";
+import { type User } from "@supabase/supabase-js";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -54,8 +56,14 @@ function countPlannedActivities(itinerary: ItineraryData): number {
   return itinerary.days.reduce((sum, day) => sum + day.activities.length, 0);
 }
 
-function DayCard({ day, index }: { day: ItineraryData["days"][0]; index: number }) {
+function DayCard({ day, index, itinerary }: { day: ItineraryData["days"][0]; index: number; itinerary: ItineraryData }) {
   const [open, setOpen] = useState(index === 0);
+
+  const dailyHotel = Math.round(getCategoryAmount(itinerary, "accommodation", "hotel") / Math.max(1, itinerary.duration));
+  const dailyMeals = Math.round(getCategoryAmount(itinerary, "food", "dining") / Math.max(1, itinerary.duration));
+  const dailyTransport = Math.round(getCategoryAmount(itinerary, "transport", "flight") / Math.max(1, itinerary.duration));
+  const activitiesTotal = day.activities.reduce((s, a) => s + a.cost, 0);
+  const dailyTotal = dailyHotel + dailyMeals + dailyTransport + activitiesTotal;
 
   return (
     <div
@@ -88,7 +96,7 @@ function DayCard({ day, index }: { day: ItineraryData["days"][0]; index: number 
           <div className="hidden sm:block text-right">
             <div className="text-sm text-gray-400">Day budget</div>
             <div className="font-bold text-gray-900">
-              {formatINR(day.activities.reduce((s, a) => s + a.cost, 0))}
+              {formatINR(dailyTotal)}
             </div>
           </div>
           {open ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
@@ -145,6 +153,37 @@ function DayCard({ day, index }: { day: ItineraryData["days"][0]; index: number 
                 </div>
               );
             })}
+
+            {/* Daily Expense Summary */}
+            <div className="mt-8 pt-5 border-t border-gray-100 pl-0 sm:pl-8">
+              <h4 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <IndianRupee className="w-4 h-4 text-green-600" />
+                Daily Expense Breakdown
+              </h4>
+              <div className="space-y-2 text-sm bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <div className="flex justify-between text-gray-600">
+                  <span className="flex items-center gap-2">🏨 Hotel / Stay</span>
+                  <span className="font-semibold">{formatINR(dailyHotel)}</span>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span className="flex items-center gap-2">🍽️ Meals (Breakfast + Lunch + Dinner)</span>
+                  <span className="font-semibold">{formatINR(dailyMeals)}</span>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span className="flex items-center gap-2">🚗 Transport</span>
+                  <span className="font-semibold">{formatINR(dailyTransport)}</span>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span className="flex items-center gap-2">🎯 Planned Activities</span>
+                  <span className="font-semibold">{formatINR(activitiesTotal)}</span>
+                </div>
+                <div className="flex justify-between text-gray-900 font-black pt-3 border-t border-gray-200 mt-2">
+                  <span>Day Total</span>
+                  <span className="text-blue-600">{formatINR(dailyTotal)}</span>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       )}
@@ -210,9 +249,16 @@ function ResultsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [saved, setSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const [isBooking, setIsBooking] = useState(false);
 
   const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
+  }, []);
   
   const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -287,23 +333,35 @@ function ResultsContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destination, startDate, endDate, travelers, budget, refreshKey]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!itinerary) return;
-    const trips = JSON.parse(localStorage.getItem("travelopedia_trips") || "[]");
-    const newTrip = {
-      id: Date.now(),
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    setIsSaving(true);
+    const supabase = createClient();
+
+    const { error } = await supabase.from("trips").insert({
+      user_id: user.id,
       destination: itinerary.destination,
-      duration: itinerary.duration,
-      travelers: itinerary.travelers,
+      start_date: startDate,
+      end_date: endDate,
+      num_travelers: itinerary.travelers,
       budget: itinerary.usedBudget,
-      status: "upcoming",
-      savedAt: new Date().toISOString(),
-      startDate,
-      endDate,
-    };
-    trips.push(newTrip);
-    localStorage.setItem("travelopedia_trips", JSON.stringify(trips));
-    setSaved(true);
+      itinerary: itinerary
+    });
+
+    setIsSaving(false);
+
+    if (error) {
+      console.error("Failed to save trip:", error);
+      alert("Failed to save trip. Please try again.");
+    } else {
+      setSaved(true);
+      alert("✓ Trip saved to dashboard!");
+    }
   };
 
   const handleBookTrip = () => {
@@ -402,13 +460,19 @@ function ResultsContent() {
                     Book Entire Trip
                   </Button>
                   <Button
-                    onClick={handleSave}
-                    disabled={saved}
+                    onClick={user ? handleSave : () => router.push("/login")}
+                    disabled={saved || isSaving}
                     className="gap-2 font-semibold h-11"
                     style={{ backgroundColor: saved ? "#00A878" : "rgba(255,255,255,0.15)", color: "white" }}
                   >
-                    {saved ? <CheckCircle className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
-                    {saved ? "Saved!" : "Save Trip"}
+                    {isSaving ? (
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : saved ? (
+                      <CheckCircle className="w-4 h-4" />
+                    ) : (
+                      <Bookmark className="w-4 h-4" />
+                    )}
+                    {isSaving ? "Saving..." : saved ? "Saved ✓" : user ? "Save This Trip" : "Sign in to Save Trip"}
                   </Button>
                   <div className="relative">
                     <Button
@@ -525,7 +589,7 @@ function ResultsContent() {
                   {/* Itinerary tab */}
                   <TabsContent value="itinerary" className="space-y-4 mt-0">
                     {itinerary.days.map((day, i) => (
-                      <DayCard key={day.day} day={day} index={i} />
+                      <DayCard key={day.day} day={day} index={i} itinerary={itinerary} />
                     ))}
                   </TabsContent>
 

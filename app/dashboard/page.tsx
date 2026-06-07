@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+import { type User } from "@supabase/supabase-js";
 import {
   MapPin, Calendar, Users, IndianRupee, Trash2, Eye,
   PlusCircle, TrendingUp, Globe, Clock, CheckCircle2,
@@ -15,7 +18,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 
 interface SavedTrip {
-  id: number;
+  id: string | number;
   destination: string;
   duration: number;
   travelers: number;
@@ -87,22 +90,60 @@ function getDestImage(destination: string) {
 }
 
 export default function DashboardPage() {
-  const [trips, setTrips] = useState<SavedTrip[]>(defaultTrips);
+  const router = useRouter();
+  const [trips, setTrips] = useState<SavedTrip[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem("travelopedia_trips");
-    if (stored) {
-      const parsed: SavedTrip[] = JSON.parse(stored);
-      // eslint-disable-next-line
-      setTrips([...defaultTrips, ...parsed.filter(t => !defaultTrips.find(d => d.id === t.id))]);
-    }
-  }, []);
+    let mounted = true;
+    const fetchUserAndTrips = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+      
+      if (mounted) setUser(user);
 
-  const handleDelete = (id: number) => {
+      const { data: tripsData } = await supabase
+        .from("trips")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (tripsData && mounted) {
+        const mappedTrips: SavedTrip[] = tripsData.map(t => {
+          const duration = t.itinerary?.duration || Math.max(1, Math.ceil((new Date(t.end_date).getTime() - new Date(t.start_date).getTime()) / (1000 * 60 * 60 * 24)));
+          return {
+            id: t.id,
+            destination: t.destination,
+            duration: duration,
+            travelers: t.num_travelers,
+            budget: t.budget,
+            status: new Date(t.start_date) > new Date() ? "upcoming" : "completed",
+            savedAt: t.created_at,
+            startDate: t.start_date,
+            endDate: t.end_date,
+          };
+        });
+        setTrips(mappedTrips);
+      }
+      if (mounted) setLoading(false);
+    };
+
+    fetchUserAndTrips();
+    return () => { mounted = false; };
+  }, [router]);
+
+  const handleDelete = async (id: string | number) => {
     const updated = trips.filter(t => t.id !== id);
     setTrips(updated);
-    const withoutDefaults = updated.filter(t => !defaultTrips.find(d => d.id === t.id));
-    localStorage.setItem("travelopedia_trips", JSON.stringify(withoutDefaults));
+    
+    const supabase = createClient();
+    await supabase.from("trips").delete().eq("id", id);
   };
 
   const totalBudget = trips.reduce((s, t) => s + t.budget, 0);
@@ -122,14 +163,14 @@ export default function DashboardPage() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
               <Avatar className="w-16 h-16 border-2 border-white/30">
                 <AvatarFallback
-                  className="text-white text-xl font-black"
+                  className="text-white text-xl font-black uppercase"
                   style={{ background: "linear-gradient(135deg, #FF6B35, #f7523a)" }}
                 >
-                  T
+                  {user?.email?.charAt(0) || "T"}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <h1 className="text-2xl font-black mb-0.5">My Travel Dashboard</h1>
+                <h1 className="text-2xl font-black mb-0.5">Welcome, {user?.email}</h1>
                 <p className="text-white/70 text-sm">Your personal trip collection & travel history</p>
               </div>
               <Link href="/">
@@ -172,7 +213,14 @@ export default function DashboardPage() {
                 </Link>
               </div>
 
-              {trips.length === 0 && (
+              {loading && (
+                <div className="bg-white rounded-2xl p-12 flex flex-col items-center justify-center shadow-sm border border-gray-100">
+                  <div className="w-8 h-8 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-4" />
+                  <p className="text-gray-500 font-medium">Loading your trips...</p>
+                </div>
+              )}
+              
+              {!loading && trips.length === 0 && (
                 <div className="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
                   <Globe className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-gray-500 font-semibold mb-2">No trips yet</h3>
@@ -185,7 +233,7 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {trips.map((trip) => {
+              {!loading && trips.map((trip) => {
                 const cfg = statusConfig[trip.status];
                 return (
                   <div
