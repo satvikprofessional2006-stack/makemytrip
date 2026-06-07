@@ -93,6 +93,7 @@ export default function DashboardPage() {
     const stored = localStorage.getItem("travelopedia_trips");
     if (stored) {
       const parsed: SavedTrip[] = JSON.parse(stored);
+      // eslint-disable-next-line
       setTrips([...defaultTrips, ...parsed.filter(t => !defaultTrips.find(d => d.id === t.id))]);
     }
   }, []);

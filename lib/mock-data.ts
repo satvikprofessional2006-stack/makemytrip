@@ -83,7 +83,12 @@ const activityTemplates: Record<string, DayActivity[][]> = {
   ],
 };
 
-function generateDays(destination: string, numDays: number, travelers: number): ItineraryDay[] {
+function generateDays(
+  destination: string,
+  numDays: number,
+  travelers: number,
+  startDate?: string
+): ItineraryDay[] {
   const days: ItineraryDay[] = [];
   const themes = [
     "Arrival & City Exploration",
@@ -97,12 +102,12 @@ function generateDays(destination: string, numDays: number, travelers: number): 
     "Farewell & Memories",
   ];
 
-  const today = new Date();
-  today.setDate(today.getDate() + 7); // Trip starts 7 days from now
+  const tripStart = startDate ? new Date(startDate) : new Date();
+  if (!startDate) tripStart.setDate(tripStart.getDate() + 7);
 
   for (let i = 0; i < numDays; i++) {
-    const dayDate = new Date(today);
-    dayDate.setDate(today.getDate() + i);
+    const dayDate = new Date(tripStart);
+    dayDate.setDate(tripStart.getDate() + i);
     const templateActivities = activityTemplates.default[i % 3];
 
     days.push({
@@ -129,25 +134,48 @@ export function generateItinerary(
   const end = endDate ? new Date(endDate) : new Date(start.getTime() + 5 * 86400000);
   const duration = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / 86400000));
 
-  const days = generateDays(destination, duration, travelers);
+  const days = generateDays(destination, duration, travelers, startDate);
   const activityTotal = days.reduce(
     (sum, day) => sum + day.activities.reduce((s, a) => s + a.cost, 0),
     0
   );
 
-  const flightCost = travelers * 8000;
-  const hotelCost = duration * travelers * 3500;
-  const miscCost = travelers * 2000;
-  const usedBudget = activityTotal + flightCost + hotelCost + miscCost;
+  const maxBudget = budget > 0 ? budget : activityTotal + travelers * 11500 + duration * travelers * 3500;
+  const scale = activityTotal > 0 && maxBudget < activityTotal + travelers * 11500 + duration * travelers * 3500
+    ? maxBudget / (activityTotal + travelers * 11500 + duration * travelers * 3500)
+    : 1;
 
+  const scaledDays = days.map((day) => ({
+    ...day,
+    activities: day.activities.map((act) => ({
+      ...act,
+      cost: Math.max(0, Math.round(act.cost * scale)),
+    })),
+  }));
+
+  const scaledActivityTotal = scaledDays.reduce(
+    (sum, day) => sum + day.activities.reduce((s, a) => s + a.cost, 0),
+    0
+  );
+
+  const flightCost = Math.round(travelers * 8000 * scale);
+  const hotelCost = Math.round(duration * travelers * 3500 * scale);
+  const foodCost = Math.round(scaledActivityTotal * 0.35);
+  const transportCost = Math.round(travelers * 1500 * scale);
+  const miscCost = Math.max(
+    0,
+    maxBudget - scaledActivityTotal - flightCost - hotelCost - foodCost - transportCost
+  );
   const budgetBreakdown: BudgetItem[] = [
     { category: "Flights", amount: flightCost, color: "#0055CC", icon: "✈️" },
     { category: "Hotels", amount: hotelCost, color: "#FF6B35", icon: "🏨" },
-    { category: "Activities", amount: activityTotal, color: "#00A878", icon: "🎯" },
-    { category: "Food & Dining", amount: Math.round(activityTotal * 0.35), color: "#F59E0B", icon: "🍽️" },
-    { category: "Transport", amount: travelers * 1500, color: "#6366F1", icon: "🚗" },
+    { category: "Activities", amount: scaledActivityTotal, color: "#00A878", icon: "🎯" },
+    { category: "Food & Dining", amount: foodCost, color: "#F59E0B", icon: "🍽️" },
+    { category: "Transport", amount: transportCost, color: "#6366F1", icon: "🚗" },
     { category: "Miscellaneous", amount: miscCost, color: "#EC4899", icon: "🛍️" },
   ];
+
+  const usedBudget = budgetBreakdown.reduce((sum, item) => sum + item.amount, 0);
 
   const hotels: HotelOption[] = [
     {
@@ -186,9 +214,9 @@ export function generateItinerary(
     destination,
     duration,
     travelers,
-    totalBudget: budget || usedBudget * 1.1,
+    totalBudget: maxBudget,
     usedBudget,
-    days,
+    days: scaledDays,
     budget: budgetBreakdown,
     hotels,
     flights,

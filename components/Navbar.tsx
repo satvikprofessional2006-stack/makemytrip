@@ -3,8 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Globe, Menu, X, Plane, LayoutDashboard } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Globe, Menu, X, Plane, LayoutDashboard, LogOut, User as UserIcon } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { createClient } from "@/utils/supabase/client";
+import { logout } from "@/app/login/actions";
+import { User } from "@supabase/supabase-js";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -16,6 +19,25 @@ export default function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -78,29 +100,68 @@ export default function Navbar() {
 
           {/* Actions */}
           <div className="hidden md:flex items-center gap-3">
-            <Link href="/dashboard">
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`gap-2 ${
-                  scrolled || !isHome
-                    ? "text-gray-600 hover:text-gray-900"
-                    : "text-white hover:bg-white/20 drop-shadow-lg"
-                }`}
+            {user ? (
+              <>
+                <Link 
+                  href="/dashboard"
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                    className: `gap-2 ${
+                      scrolled || !isHome
+                        ? "text-gray-600 hover:text-gray-900"
+                        : "text-white hover:bg-white/20 drop-shadow-lg"
+                    }`
+                  })}
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  My Trips
+                </Link>
+                <div className="flex items-center gap-2 pl-2 ml-1 border-l border-gray-300/30">
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-full ${scrolled || !isHome ? 'bg-gray-100 text-gray-700' : 'bg-white/20 text-white'}`}>
+                    {user.email ? user.email.charAt(0).toUpperCase() : <UserIcon className="w-4 h-4" />}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => logout()}
+                    className={`gap-2 px-2 ${
+                      scrolled || !isHome
+                        ? "text-gray-600 hover:text-red-600"
+                        : "text-white hover:text-red-400 hover:bg-white/20 drop-shadow-lg"
+                    }`}
+                    title="Log out"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <Link 
+                href="/login"
+                className={buttonVariants({
+                  variant: "ghost",
+                  size: "sm",
+                  className: `font-medium ${
+                    scrolled || !isHome
+                      ? "text-gray-600 hover:text-gray-900"
+                      : "text-white hover:bg-white/20 drop-shadow-lg"
+                  }`
+                })}
               >
-                <LayoutDashboard className="w-4 h-4" />
-                My Trips
-              </Button>
-            </Link>
-            <Link href="/">
-              <Button
-                size="sm"
-                className="gap-2 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
-                style={{ backgroundColor: "#FF6B35" }}
-              >
-                <Plane className="w-4 h-4" />
-                Plan Trip
-              </Button>
+                Log In
+              </Link>
+            )}
+            <Link 
+              href="/"
+              className={buttonVariants({
+                size: "sm",
+                className: "gap-2 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 ml-1"
+              })}
+              style={{ backgroundColor: "#FF6B35" }}
+            >
+              <Plane className="w-4 h-4" />
+              Plan Trip
             </Link>
           </div>
 
@@ -143,14 +204,40 @@ export default function Navbar() {
               </Link>
             ))}
             <hr className="my-2 border-gray-100" />
-            <Link href="/" onClick={() => setMobileOpen(false)}>
+            {user ? (
               <Button
-                className="w-full gap-2 text-white font-semibold"
-                style={{ backgroundColor: "#FF6B35" }}
+                variant="ghost"
+                onClick={() => {
+                  setMobileOpen(false);
+                  logout();
+                }}
+                className="w-full justify-start gap-2 text-red-600 hover:bg-red-50 hover:text-red-700"
               >
-                <Plane className="w-4 h-4" />
-                Plan a Trip
+                <LogOut className="w-4 h-4" />
+                Log out
               </Button>
+            ) : (
+              <Link 
+                href="/login" 
+                onClick={() => setMobileOpen(false)}
+                className={buttonVariants({
+                  variant: "ghost",
+                  className: "w-full justify-start text-gray-700 hover:bg-gray-50"
+                })}
+              >
+                Log In
+              </Link>
+            )}
+            <Link 
+              href="/" 
+              onClick={() => setMobileOpen(false)}
+              className={buttonVariants({
+                className: "w-full gap-2 text-white font-semibold"
+              })}
+              style={{ backgroundColor: "#FF6B35" }}
+            >
+              <Plane className="w-4 h-4" />
+              Plan a Trip
             </Link>
           </div>
         </div>

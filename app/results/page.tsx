@@ -19,7 +19,17 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { generateItinerary, type ItineraryData, type DayActivity } from "@/lib/mock-data";
+import { type ItineraryData, type DayActivity } from "@/lib/mock-data";
+import {
+  fetchItinerary,
+  loadItineraryFromStorage,
+  saveItineraryToStorage,
+  getBudgetUsagePercent,
+  getBudgetRemaining,
+  ITINERARY_STORAGE_KEY,
+  type ItineraryRequest,
+} from "@/lib/itinerary-api";
+import ItineraryLoadingOverlay from "@/components/ItineraryLoadingOverlay";
 
 const activityTypeConfig: Record<DayActivity["type"], { label: string; color: string; bg: string; icon: string }> = {
   food:          { label: "Food & Dining", color: "#F59E0B", bg: "#FFFBEB", icon: "🍽️" },
@@ -31,6 +41,17 @@ const activityTypeConfig: Record<DayActivity["type"], { label: string; color: st
 
 function formatINR(amount: number): string {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(amount);
+}
+
+function getCategoryAmount(itinerary: ItineraryData, ...keywords: string[]): number {
+  const item = itinerary.budget.find((b) =>
+    keywords.some((k) => b.category.toLowerCase().includes(k.toLowerCase()))
+  );
+  return item?.amount ?? 0;
+}
+
+function countPlannedActivities(itinerary: ItineraryData): number {
+  return itinerary.days.reduce((sum, day) => sum + day.activities.length, 0);
 }
 
 function DayCard({ day, index }: { day: ItineraryData["days"][0]; index: number }) {
@@ -188,14 +209,9 @@ function BudgetChart({ data }: { data: ItineraryData["budget"] }) {
 function ResultsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [itinerary, setItinerary] = useState<ItineraryData | null>(null);
-  const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
-  const [bookingSuccess, setBookingSuccess] = useState(false);
 
-  const [loadingTextIndex, setLoadingTextIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
   
   const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
@@ -210,44 +226,65 @@ function ResultsContent() {
     interests: [] as string[]
   });
 
-  const loadingTexts = [
-    "Analyzing your destination...",
-    "Calculating best budget split...",
-    "Finding hidden gems...",
-    "Building your day-by-day plan...",
-    "Almost ready..."
-  ];
-
-  const destination = searchParams.get("destination") || "Goa, India";
+  const destination = searchParams.get("destination") || "";
   const startDate = searchParams.get("startDate") || "";
   const endDate = searchParams.get("endDate") || "";
   const travelers = parseInt(searchParams.get("travelers") || "2");
   const budget = parseInt(searchParams.get("budget") || "0");
 
+  const request: ItineraryRequest = {
+    destination,
+    startDate,
+    endDate,
+    travelers,
+    budget,
+    preferences: prefs,
+  };
+
+  const [itinerary, setItinerary] = useState<ItineraryData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   useEffect(() => {
-    setLoading(true);
-    setLoadingTextIndex(0);
-    setProgress(0);
+    let cancelled = false;
 
-    // Trigger progress bar animation
-    const progressTimer = setTimeout(() => setProgress(100), 50);
+    async function loadItinerary() {
+      const cached = loadItineraryFromStorage(request);
+      if (cached && refreshKey === 0) {
+        setItinerary(cached);
+        setLoading(false);
+        return;
+      }
 
-    // Rotate text every 1.2 seconds (6s total / 5 texts)
-    const textInterval = setInterval(() => {
-      setLoadingTextIndex((prev) => Math.min(prev + 1, loadingTexts.length - 1));
-    }, 1200);
+      setLoading(true);
+      setError("");
 
-    // Simulate AI generation delay
-    const timer = setTimeout(() => {
-      setItinerary(generateItinerary(destination, startDate, endDate, travelers, budget));
-      setLoading(false);
-    }, 6000);
+      if (!destination || !startDate || !endDate || !budget) {
+        setLoading(false);
+        setError("Something went wrong, please try again");
+        return;
+      }
 
+      try {
+        const data = await fetchItinerary(request);
+        if (!cancelled) {
+          saveItineraryToStorage(request, data);
+          setItinerary(data);
+          setLoading(false);
+        }
+      } catch {
+        if (!cancelled) {
+          setLoading(false);
+          setError("Something went wrong, please try again");
+        }
+      }
+    }
+
+    loadItinerary();
     return () => {
-      clearTimeout(progressTimer);
-      clearInterval(textInterval);
-      clearTimeout(timer);
+      cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destination, startDate, endDate, travelers, budget, refreshKey]);
 
   const handleSave = () => {
@@ -275,7 +312,8 @@ function ResultsContent() {
 
   const handleRegenerate = () => {
     setIsEditPanelOpen(false);
-    setRefreshKey(k => k + 1);
+    sessionStorage.removeItem(ITINERARY_STORAGE_KEY);
+    setRefreshKey((k) => k + 1);
   };
 
   const handleCopyLink = () => {
@@ -285,36 +323,27 @@ function ResultsContent() {
   };
 
   if (loading) {
+    return <ItineraryLoadingOverlay />;
+  }
+
+  if (error || !itinerary) {
     return (
-      <div className="fixed inset-0 z-[100] bg-[#040919] flex flex-col items-center justify-center p-4">
-        {/* Animated plane icon */}
-        <div className="relative w-24 h-24 mb-8">
-          <div className="absolute inset-0 bg-blue-500/20 rounded-full animate-ping" style={{ animationDuration: '2s' }} />
-          <div className="absolute inset-0 bg-blue-500/40 rounded-full animate-pulse" />
-          <div className="relative w-full h-full bg-blue-600 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.6)]">
-            <Plane className="w-10 h-10 text-white animate-bounce" />
-          </div>
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex flex-col items-center justify-center px-4 pt-20">
+          <p className="text-red-500 text-lg font-semibold mb-6">
+            {error || "Something went wrong, please try again"}
+          </p>
+          <Button
+            onClick={() => router.push("/")}
+            className="gap-2"
+            style={{ backgroundColor: "#0055CC" }}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to search
+          </Button>
         </div>
-
-        {/* Rotating Text */}
-        <h2 
-          className="text-xl md:text-2xl font-black text-white text-center h-8 transition-opacity duration-500"
-          key={loadingTextIndex}
-        >
-          {loadingTexts[loadingTextIndex]}
-        </h2>
-
-        {/* Progress Bar */}
-        <div className="w-full max-w-xs h-1.5 bg-white/10 rounded-full mt-8 overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-blue-500 to-teal-400 rounded-full ease-linear"
-            style={{ 
-              width: `${progress}%`, 
-              transitionDuration: "6000ms",
-              transitionProperty: "width"
-            }}
-          />
-        </div>
+        <Footer />
       </div>
     );
   }
@@ -346,7 +375,7 @@ function ResultsContent() {
                     <MapPin className="w-4 h-4" />
                     AI-Generated Itinerary
                   </div>
-                  <h1 className="text-3xl md:text-4xl font-black mb-3">{destination}</h1>
+                  <h1 className="text-3xl md:text-4xl font-black mb-3">{itinerary.destination}</h1>
                   <div className="flex flex-wrap gap-4 text-white/80 text-sm">
                     <span className="flex items-center gap-1.5">
                       <Calendar className="w-4 h-4" />
@@ -358,7 +387,7 @@ function ResultsContent() {
                     </span>
                     <span className="flex items-center gap-1.5">
                       <IndianRupee className="w-4 h-4" />
-                      {formatINR(itinerary.usedBudget)} estimated
+                      {formatINR(itinerary.usedBudget)} planned
                     </span>
                   </div>
                 </div>
@@ -399,7 +428,7 @@ function ResultsContent() {
                           
                           <Button 
                             className="w-full justify-start gap-3 bg-[#25D366] hover:bg-[#20b858] text-white font-bold h-11 rounded-xl"
-                            onClick={() => window.open("https://wa.me/?text=Check out my Goa trip plan on Travelopedia!", "_blank")}
+                            onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`Check out my ${itinerary.destination} trip plan on Travelopedia!`)}`, "_blank")}
                           >
                             <span className="text-xl leading-none">📱</span> Share on WhatsApp
                           </Button>
@@ -427,7 +456,7 @@ function ResultsContent() {
                   </div>
                   <Button
                     variant="ghost"
-                    className="gap-2 text-white hover:bg-white/10 border border-white/20"
+                    className="gap-2 text-white hover:bg-white/10 border border-white/20 h-11"
                   >
                     <Download className="w-4 h-4" />
                     PDF
@@ -445,18 +474,33 @@ function ResultsContent() {
 
               {/* Budget gauge */}
               <div className="mt-6 bg-white/10 rounded-xl p-4">
-                <div className="flex justify-between text-sm text-white/80 mb-2">
+                <div className="flex flex-wrap justify-between gap-2 text-sm text-white/80 mb-2">
                   <span>Budget Usage</span>
-                  <span>{formatINR(itinerary.usedBudget)} / {formatINR(itinerary.totalBudget)}</span>
+                  <span>
+                    {formatINR(itinerary.usedBudget)} planned of {formatINR(itinerary.totalBudget)}
+                  </span>
                 </div>
                 <div className="h-2.5 rounded-full bg-white/20 overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-1000"
                     style={{
-                      width: `${Math.min(100, (itinerary.usedBudget / itinerary.totalBudget) * 100)}%`,
-                      background: itinerary.usedBudget > itinerary.totalBudget ? "#EF4444" : "#00A878",
+                      width: `${getBudgetUsagePercent(itinerary)}%`,
+                      background:
+                        itinerary.usedBudget > itinerary.totalBudget
+                          ? "#EF4444"
+                          : getBudgetUsagePercent(itinerary) >= 95
+                            ? "#F59E0B"
+                            : "#00A878",
                     }}
                   />
+                </div>
+                <div className="flex flex-wrap justify-between gap-2 mt-2 text-xs text-white/60">
+                  <span>{getBudgetUsagePercent(itinerary)}% of your max budget</span>
+                  {getBudgetRemaining(itinerary) > 0 && (
+                    <span className="text-green-300">
+                      {formatINR(getBudgetRemaining(itinerary))} remaining
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -621,11 +665,11 @@ function ResultsContent() {
                 >
                   <h3 className="font-black mb-3">🌤️ Weather Forecast</h3>
                   <div className="grid grid-cols-4 gap-2 text-center text-sm">
-                    {["Mon", "Tue", "Wed", "Thu"].map((day) => (
+                    {["Mon", "Tue", "Wed", "Thu"].map((day, index) => (
                       <div key={day} className="bg-white/15 rounded-xl p-2.5">
                         <div className="text-white/70 text-sm mb-1">{day}</div>
                         <div className="text-lg">☀️</div>
-                        <div className="font-bold text-sm">{28 + Math.round(Math.random() * 4)}°C</div>
+                        <div className="font-bold text-sm">{28 + (index % 4)}°C</div>
                       </div>
                     ))}
                   </div>
@@ -654,9 +698,11 @@ function ResultsContent() {
                   </div>
                   <div className="flex-1 text-left">
                     <h4 className="font-bold text-gray-900">Flights</h4>
-                    <div className="text-sm text-gray-600">Delhi → {destination.split(',')[0]}</div>
-                    <div className="text-sm text-gray-400 mt-0.5">{startDate || "Oct 15"}, {travelers} travelers</div>
-                    <div className="text-sm font-bold text-blue-600 mt-1">~₹4,200 per person</div>
+                    <div className="text-sm text-gray-600">Delhi → {itinerary.destination.split(",")[0]}</div>
+                    <div className="text-sm text-gray-400 mt-0.5">{startDate}, {travelers} travelers</div>
+                    <div className="text-sm font-bold text-blue-600 mt-1">
+                      {formatINR(getCategoryAmount(itinerary, "transport", "flight"))} total
+                    </div>
                   </div>
                 </div>
                 <Button 
@@ -675,9 +721,11 @@ function ResultsContent() {
                   </div>
                   <div className="flex-1 text-left">
                     <h4 className="font-bold text-gray-900">Hotels</h4>
-                    <div className="text-sm text-gray-600">{destination.split(',')[0]} · {startDate || "Oct 15"} – {endDate || "Oct 19"}</div>
+                    <div className="text-sm text-gray-600">{itinerary.destination.split(",")[0]} · {startDate} – {endDate}</div>
                     <div className="text-sm text-gray-400 mt-0.5">1 room, {travelers} guests</div>
-                    <div className="text-sm font-bold text-orange-600 mt-1">~₹1,800 per night</div>
+                    <div className="text-sm font-bold text-orange-600 mt-1">
+                      {formatINR(Math.round(getCategoryAmount(itinerary, "accommodation", "hotel") / Math.max(1, itinerary.duration)))} per night
+                    </div>
                   </div>
                 </div>
                 <Button 
@@ -696,9 +744,11 @@ function ResultsContent() {
                   </div>
                   <div className="flex-1 text-left">
                     <h4 className="font-bold text-gray-900">Activities & Experiences</h4>
-                    <div className="text-sm text-gray-600">5 experiences planned</div>
-                    <div className="text-sm text-gray-400 mt-0.5">Dolphin trip, Fort visit + more</div>
-                    <div className="text-sm font-bold text-green-600 mt-1">~₹2,800 total</div>
+                    <div className="text-sm text-gray-600">{countPlannedActivities(itinerary)} experiences planned</div>
+                    <div className="text-sm text-gray-400 mt-0.5">Across {itinerary.duration} days</div>
+                    <div className="text-sm font-bold text-green-600 mt-1">
+                      {formatINR(getCategoryAmount(itinerary, "activities"))} total
+                    </div>
                   </div>
                 </div>
                 <Button 
@@ -712,7 +762,7 @@ function ResultsContent() {
 
             <div className="mt-6 border-t border-gray-200 pt-5 text-center">
               <div className="font-black text-gray-900 text-lg mb-1">
-                Total estimated: {itinerary ? formatINR(itinerary.totalBudget) : "₹18,000"}
+                Total planned: {itinerary ? formatINR(itinerary.usedBudget) : "—"}
               </div>
               <p className="text-sm text-gray-400 mb-4">
                 Each partner opens in a new tab. Book in any order you prefer.
@@ -722,7 +772,7 @@ function ResultsContent() {
                 className="w-full h-11 font-bold text-gray-600 border-gray-200 hover:bg-gray-100 rounded-xl bg-gray-100/50"
                 onClick={() => setIsBooking(false)}
               >
-                I'll Book Later
+                I&apos;ll Book Later
               </Button>
             </div>
           </div>
@@ -749,16 +799,24 @@ function ResultsContent() {
           {/* Section 1 */}
           <div>
             <label className="block font-bold text-gray-900 mb-3">Travel Style</label>
-            <div className="flex gap-2 bg-gray-100 p-1.5 rounded-xl">
-              {["🎒 Budget", "⚖ Balanced", "💎 Premium"].map(opt => (
+            <div className="flex flex-col gap-2">
+              {[
+                {name: "Budget", icon: "🎒", desc: "Keep it light on the pocket"},
+                {name: "Balanced", icon: "⚖", desc: "A mix of comfort and savings"},
+                {name: "Premium", icon: "💎", desc: "Luxury and premium experiences"}
+              ].map(pref => (
                 <button
-                  key={opt}
-                  onClick={() => setPrefs({...prefs, style: opt})}
-                  className={`flex-1 py-2.5 px-1 text-sm sm:text-sm font-semibold rounded-lg transition-all ${
-                    prefs.style === opt ? "bg-blue-600 text-white shadow-sm" : "text-gray-600 hover:text-gray-900"
+                  key={pref.name}
+                  onClick={() => setPrefs({...prefs, style: pref.name})}
+                  className={`flex items-center gap-3 p-4 rounded-xl transition-all border ${
+                    prefs.style === pref.name ? "bg-blue-50 border-blue-200" : "bg-gray-50 border-gray-100 hover:bg-gray-100"
                   }`}
                 >
-                  {opt}
+                  <div className="text-2xl">{pref.icon}</div>
+                  <div className="flex-1 text-left">
+                    <div className={`font-bold ${prefs.style === pref.name ? "text-blue-900" : "text-gray-900"}`}>{pref.name}</div>
+                    <div className="text-xs text-gray-500">{pref.desc}</div>
+                  </div>
                 </button>
               ))}
             </div>
