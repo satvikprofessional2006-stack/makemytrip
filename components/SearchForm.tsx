@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, MapPin, Calendar, Users, IndianRupee, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,43 @@ const popularDestinations = [
   "Bali, Indonesia", "Paris, France", "Maldives", "Singapore",
   "Dubai, UAE", "Thailand", "Nepal", "Ladakh, India",
 ];
+
+const DESTINATION_BUDGETS: Record<string, number> = {
+  "paris": 8000,
+  "london": 9000,
+  "goa": 1500,
+  "bangkok": 2000,
+  "bali": 2500,
+  "dubai": 5000,
+  "delhi": 1000,
+  "mumbai": 1500,
+  "jaipur": 1200,
+  "rajasthan": 1300,
+  "kerala": 1800,
+  "maldives": 4000,
+  "singapore": 3500,
+  "japan": 6000,
+  "new york": 8000,
+  "barcelona": 5000,
+  "amsterdam": 5000,
+  "sydney": 7000,
+  "hong kong": 4000,
+  "thailand": 1800,
+};
+
+function getMinimumBudget(destination: string, days: number, travelers: number) {
+  const destLower = destination.toLowerCase();
+  let dailyRate = 3000; // default minimum if not matched
+  
+  for (const [key, value] of Object.entries(DESTINATION_BUDGETS)) {
+    if (destLower.includes(key)) {
+      dailyRate = value;
+      break;
+    }
+  }
+  
+  return dailyRate * days * travelers;
+}
 
 type FormFields = {
   destination: string;
@@ -39,6 +76,26 @@ export default function SearchForm() {
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestedBudget, setSuggestedBudget] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (form.destination && form.startDate && form.endDate && form.travelers) {
+      const start = new Date(form.startDate);
+      const end = new Date(form.endDate);
+      const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+      const travelers = parseInt(form.travelers, 10);
+      
+      const minBudget = getMinimumBudget(form.destination, days, travelers);
+      
+      if (!form.budget || parseInt(form.budget, 10) < minBudget) {
+        setSuggestedBudget(minBudget);
+      } else {
+        setSuggestedBudget(null);
+      }
+    } else {
+      setSuggestedBudget(null);
+    }
+  }, [form.destination, form.startDate, form.endDate, form.travelers, form.budget]);
 
   const handleDestinationChange = (val: string) => {
     setForm({ ...form, destination: val });
@@ -273,6 +330,24 @@ export default function SearchForm() {
             </div>
             {errors.budget && (
               <p className="text-red-400 text-sm mt-1.5">{errors.budget}</p>
+            )}
+            {suggestedBudget !== null && (
+              <div className="mt-2.5 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl backdrop-blur-md">
+                <p className="text-blue-100 font-medium text-xs flex items-start gap-1.5">
+                  <span className="text-sm leading-none">💡</span>
+                  <span>Recommended minimum: <strong>{new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(suggestedBudget)}</strong></span>
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setForm({ ...form, budget: String(suggestedBudget) });
+                    clearFieldError("budget");
+                  }}
+                  className="mt-1.5 text-blue-300 hover:text-white text-xs font-semibold flex items-center transition-colors ml-5"
+                >
+                  Apply this budget →
+                </button>
+              </div>
             )}
           </div>
 
