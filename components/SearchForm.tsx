@@ -76,7 +76,7 @@ export default function SearchForm() {
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestedBudget, setSuggestedBudget] = useState<number | null>(null);
+  const [minimumBudget, setMinimumBudget] = useState<number | null>(null);
 
   useEffect(() => {
     if (form.destination && form.startDate && form.endDate && form.travelers) {
@@ -86,16 +86,11 @@ export default function SearchForm() {
       const travelers = parseInt(form.travelers, 10);
       
       const minBudget = getMinimumBudget(form.destination, days, travelers);
-      
-      if (!form.budget || parseInt(form.budget, 10) < minBudget) {
-        setSuggestedBudget(minBudget);
-      } else {
-        setSuggestedBudget(null);
-      }
+      setMinimumBudget(minBudget);
     } else {
-      setSuggestedBudget(null);
+      setMinimumBudget(null);
     }
-  }, [form.destination, form.startDate, form.endDate, form.travelers, form.budget]);
+  }, [form.destination, form.startDate, form.endDate, form.travelers]);
 
   const handleDestinationChange = (val: string) => {
     setForm({ ...form, destination: val });
@@ -128,6 +123,8 @@ export default function SearchForm() {
     }
     if (!form.budget || Number(form.budget) <= 0) {
       newErrors.budget = "Please enter your budget";
+    } else if (minimumBudget && Number(form.budget) < minimumBudget) {
+      newErrors.budget = `Budget must be at least ₹${new Intl.NumberFormat('en-IN').format(minimumBudget)}`;
     }
 
     setErrors(newErrors);
@@ -308,9 +305,14 @@ export default function SearchForm() {
           </div>
 
           {/* Budget */}
-          <div>
-            <label className="block text-white/80 text-sm font-semibold uppercase tracking-wider mb-2">
+          <div className="relative">
+            <label className="block text-white/80 text-sm font-semibold uppercase tracking-wider mb-2 h-[20px]">
               Max Budget (INR)
+              {minimumBudget !== null && (
+                <span className="text-orange-400 ml-2 normal-case tracking-normal">
+                  Min: ₹{new Intl.NumberFormat('en-IN').format(minimumBudget)}
+                </span>
+              )}
             </label>
             <div className="relative">
               <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 w-4 h-4 pointer-events-none" />
@@ -324,47 +326,47 @@ export default function SearchForm() {
                   clearFieldError("budget");
                 }}
                 className={`pl-10 bg-black/20 border-white/30 text-white placeholder:text-white/60 focus:border-white h-12 rounded-xl md:text-sm text-base ${errors.budget ? "border-red-400" : ""}`}
-                min="0"
+                min={minimumBudget !== null ? minimumBudget : "0"}
                 step="1000"
               />
             </div>
             {errors.budget && (
-              <p className="text-red-400 text-sm mt-1.5">{errors.budget}</p>
+              <p className="text-red-400 text-sm mt-1.5 whitespace-nowrap">{errors.budget}</p>
             )}
-            {suggestedBudget !== null && (
-              <div className="mt-2.5 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl backdrop-blur-md">
-                <p className="text-blue-100 font-medium text-xs flex items-start gap-1.5">
-                  <span className="text-sm leading-none">💡</span>
-                  <span>Recommended minimum: <strong>{new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(suggestedBudget)}</strong></span>
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setForm({ ...form, budget: String(suggestedBudget) });
-                    clearFieldError("budget");
-                  }}
-                  className="mt-1.5 text-blue-300 hover:text-white text-xs font-semibold flex items-center transition-colors ml-5"
-                >
-                  Apply this budget →
-                </button>
-              </div>
+            {!errors.budget && minimumBudget !== null && Number(form.budget) > 0 && Number(form.budget) < minimumBudget && (
+              <p className="text-red-400 text-sm mt-1.5 flex items-center gap-1.5 whitespace-nowrap">
+                <span className="text-xs">❌</span> 
+                <span>Minimum ₹{new Intl.NumberFormat('en-IN').format(minimumBudget)}</span>
+              </p>
             )}
           </div>
 
           {/* Search button */}
-          <div className="md:col-span-2 lg:col-span-2 flex items-end">
+          <div className="md:col-span-2 lg:col-span-2 flex items-start pt-[28px]">
             <Button
               id="search-btn"
               type="submit"
-              disabled={loading}
-              className="w-full h-12 text-base font-bold rounded-xl btn-premium-hover gap-2 text-white"
+              disabled={loading || (minimumBudget !== null && Number(form.budget) > 0 && Number(form.budget) < minimumBudget)}
+              className={`w-full h-12 text-base font-bold rounded-xl btn-premium-hover gap-2 text-white transition-all ${
+                minimumBudget !== null && Number(form.budget) > 0 && Number(form.budget) < minimumBudget
+                  ? "bg-gray-500 hover:bg-gray-500 opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
               style={{
-                background: "linear-gradient(135deg, #FF6B35 0%, #f7523a 100%)",
+                background: minimumBudget !== null && Number(form.budget) > 0 && Number(form.budget) < minimumBudget
+                  ? "#6B7280" 
+                  : "linear-gradient(135deg, #FF6B35 0%, #f7523a 100%)",
               }}
             >
-              <Sparkles className="w-5 h-5" />
-              Generate AI Itinerary
-              <Search className="w-4 h-4 ml-1" />
+              {minimumBudget !== null && Number(form.budget) > 0 && Number(form.budget) < minimumBudget ? (
+                "Enter Valid Details"
+              ) : (
+                <>
+                  <Sparkles className="w-5 h-5" />
+                  Generate AI Itinerary
+                  <Search className="w-4 h-4 ml-1" />
+                </>
+              )}
             </Button>
           </div>
         </div>

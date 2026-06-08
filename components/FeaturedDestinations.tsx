@@ -139,96 +139,97 @@ export default function FeaturedDestinations() {
             }).toString();
 
             return (
-            <Link
-              href={`/results?${query}`}
-              key={dest.id}
-              className="block group"
-            >
-              <div
-                className="card-hover rounded-2xl overflow-hidden bg-white shadow-md border border-gray-100"
-                style={{ animationDelay: `${idx * 0.1}s` }}
+              <Link
+                key={dest.id}
+                href={`/results?${query}`}
+                className="h-full block"
               >
-                {/* Image */}
-                <div className="relative overflow-hidden h-52">
-                  <img
-                    src={dest.image}
-                    alt={dest.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                <div
+                  className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full flex flex-col"
+                >
+                  {/* Image */}
+                  <div className="relative overflow-hidden h-52 shrink-0">
+                    <img
+                      src={dest.image}
+                      alt={dest.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
-                  {/* Trending badge */}
-                  {dest.trending && (
-                    <div
-                      className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full text-white text-xs font-bold"
-                      style={{ backgroundColor: "#FF6B35" }}
-                    >
-                      <TrendingUp className="w-3 h-3" />
-                      Trending
+                    {/* Trending badge */}
+                    {dest.trending && (
+                      <div
+                        className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full text-white text-xs font-bold"
+                        style={{ backgroundColor: "#FF6B35" }}
+                      >
+                        <TrendingUp className="w-3 h-3" />
+                        Trending
+                      </div>
+                    )}
+
+                    {/* Rating */}
+                    <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                      <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                      <span className="text-xs font-bold text-gray-800">{dest.rating}</span>
                     </div>
-                  )}
 
-                  {/* Rating */}
-                  <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full">
-                    <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                    <span className="text-xs font-bold text-gray-800">{dest.rating}</span>
+                    {/* Name overlay */}
+                    <div className="absolute bottom-3 left-3 right-3">
+                      <div className="flex items-end justify-between">
+                        <div>
+                          <h3 className="text-white text-xl font-black">{dest.name}</h3>
+                          <p className="text-white/80 text-sm flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5" />
+                            {dest.country}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-white/70 text-xs">from</p>
+                          <p className="text-white font-bold text-base">{dest.priceFrom}</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Name overlay */}
-                  <div className="absolute bottom-3 left-3 right-3">
-                    <div className="flex items-end justify-between">
-                      <div>
-                        <h3 className="text-white text-xl font-black">{dest.name}</h3>
-                        <p className="text-white/80 text-sm flex items-center gap-1">
-                          <MapPin className="w-3.5 h-3.5" />
-                          {dest.country}
-                        </p>
+                  {/* Card body */}
+                  <div className="p-4 flex flex-col flex-1">
+                    <p className="text-gray-500 text-sm mb-4 line-clamp-2">{dest.description}</p>
+
+                    <div className="mt-auto">
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap gap-1.5">
+                          {dest.tags.slice(0, 2).map((tag) => (
+                            <Badge
+                              key={tag}
+                              variant="secondary"
+                              className="text-xs font-medium px-2 py-0.5 rounded-full border-0"
+                              style={{
+                                backgroundColor: tagColors[tag] + "18",
+                                color: tagColors[tag] || "#374151",
+                              }}
+                            >
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-1 text-gray-400 text-xs">
+                          <Clock className="w-3.5 h-3.5" />
+                          {dest.duration}
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-white/70 text-xs">from</p>
-                        <p className="text-white font-bold text-base">{dest.priceFrom}</p>
+
+                      <div
+                        className="mt-4 w-full py-2.5 rounded-xl text-sm font-semibold text-center text-white transition-all duration-200 group-hover:shadow-lg"
+                        style={{ backgroundColor: "#0055CC" }}
+                      >
+                        Plan This Trip →
                       </div>
                     </div>
                   </div>
                 </div>
-
-                {/* Card body */}
-                <div className="p-4">
-                  <p className="text-gray-500 text-sm mb-3 line-clamp-2">{dest.description}</p>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-wrap gap-1.5">
-                      {dest.tags.slice(0, 2).map((tag) => (
-                        <Badge
-                          key={tag}
-                          variant="secondary"
-                          className="text-xs font-medium px-2 py-0.5 rounded-full border-0"
-                          style={{
-                            backgroundColor: tagColors[tag] + "18",
-                            color: tagColors[tag] || "#374151",
-                          }}
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-1 text-gray-400 text-xs">
-                      <Clock className="w-3.5 h-3.5" />
-                      {dest.duration}
-                    </div>
-                  </div>
-
-                  <div
-                    className="mt-4 w-full py-2.5 rounded-xl text-sm font-semibold text-center text-white transition-all duration-200 group-hover:shadow-lg"
-                    style={{ backgroundColor: "#0055CC" }}
-                  >
-                    Plan This Trip →
-                  </div>
-                </div>
-              </div>
-            </Link>
-          );
+              </Link>
+            );
           })}
         </div>
 

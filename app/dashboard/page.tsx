@@ -301,7 +301,7 @@ export default function DashboardPage() {
                       )}
 
                       <Link
-                        href={`/results?destination=${encodeURIComponent(trip.destination)}&travelers=${trip.travelers}&budget=${trip.budget}`}
+                        href={`/results?destination=${encodeURIComponent(trip.destination)}&travelers=${trip.travelers}&budget=${trip.budget}&startDate=${trip.startDate || new Date(Date.now() + 7 * 86400000).toISOString().split("T")[0]}&endDate=${trip.endDate || new Date(Date.now() + (7 + trip.duration) * 86400000).toISOString().split("T")[0]}`}
                       >
                         <Button
                           size="sm"

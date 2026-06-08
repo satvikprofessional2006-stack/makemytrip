@@ -21,6 +21,7 @@ export interface ApiItinerary {
   totalDays: number;
   totalCost: number;
   budgetBreakdown: {
+    flights: number;
     accommodation: number;
     transport: number;
     food: number;
@@ -46,6 +47,7 @@ export interface ApiItinerary {
 export const ITINERARY_STORAGE_KEY = "travelopedia_current_itinerary";
 
 const BUDGET_BREAKDOWN_KEYS = [
+  "flights",
   "accommodation",
   "transport",
   "food",
@@ -374,6 +376,7 @@ export function generateFallbackApiItinerary(
       totalDays: data.duration,
       totalCost: targetSpend,
       budgetBreakdown: {
+        flights: 0,
         accommodation,
         transport,
         food,
@@ -396,7 +399,11 @@ export async function fetchItinerary(
   });
 
   if (!response.ok) {
-    throw new Error("Failed to generate itinerary");
+    const errorData = await response.json().catch(() => null);
+    if (errorData?.suggestion) {
+      throw new Error(errorData.suggestion);
+    }
+    throw new Error(errorData?.error || "Failed to generate itinerary");
   }
 
   const data = await response.json();

@@ -24,53 +24,67 @@ async function generateWithOpenAI(request: ItineraryRequest) {
     (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
   );
 
-  const prompt = `You are an expert Indian travel planner.
+  const prompt = `You are a travel planning AI for India. IMPORTANT RULES:
 
-Generate a complete day-by-day travel itinerary with these details:
+BUDGET IS ABSOLUTE - NEVER exceed it. NEVER leave unused budget > 5000.
+
+VALIDATION - Check if budget is realistic FIRST:
+- Paris per person minimum: ₹15,000-20,000/day (flights ₹25K-40K + hotel ₹5K + food ₹3K + activity ₹2K)
+- Goa per person: ₹1,500-2,500/day (hotel ₹1.5K + food ₹800 + activity ₹500)
+- Bangkok per person: ₹2,000-3,000/day
+- Delhi per person: ₹1,000-1,500/day
+
+IF BUDGET IS REALISTIC, create detailed itinerary:
+
+Trip Details:
 - Destination: ${destination}
-- Start Date: ${startDate}
-- End Date: ${endDate}
-- Number of Days: ${days}
-- Pace: ${preferences?.pace || "moderate"}
-- Interests: ${preferences?.interests && Array.isArray(preferences.interests) ? preferences.interests.join(", ") : "General"}
-- Number of Travelers: ${travelers}
-- Maximum Budget: INR ${budget} (TOTAL for all travelers)
+- Dates: ${startDate} to ${endDate} (${days} days)
+- Travelers: ${travelers}
+- Total Budget: ₹${budget}
+- Per person per day: ₹${Math.round(budget / (days * travelers))}
 
-STRICT RULES:
-1. totalCost MUST be less than or equal to INR ${budget} — this is a hard limit, never exceed it
-2. accommodation + transport + food + activities + buffer MUST equal totalCost
-3. totalCost MUST equal the sum of all activity costs across all days
-4. All prices must be in Indian Rupees (INR)
-5. Use only real places that actually exist
-6. Include realistic travel times between places
-7. Include breakfast, lunch, dinner recommendations
-8. Be specific with timings
+STRICT BUDGET BREAKDOWN (must total exactly = ₹${budget}):
+- Flights: ₹[EXACT]
+- Accommodation: ₹[EXACT] 
+- Food: ₹[EXACT]
+- Activities: ₹[EXACT]
+- Local Transport: ₹[EXACT]
+- Emergency Buffer: ₹[EXACT]
+TOTAL = ₹${budget}
 
-Return ONLY a valid JSON object with exactly this structure, no extra text:
+RULES:
+1. Flights cost realistic for ${travelers} people
+2. Hotel cost realistic for ${days} nights
+3. Food realistic for ${days} days
+4. All activities must fit budget
+5. NO unused budget (difference < ₹1000)
+6. Provide day-by-day breakdown with exact costs
+
+Return ONLY valid JSON:
 {
-  "destination": "city name",
-  "totalDays": number,
-  "totalCost": number,
+  "destination": "${destination}",
+  "totalDays": ${days},
+  "totalCost": ${budget},
   "budgetBreakdown": {
-    "accommodation": number,
-    "transport": number,
-    "food": number,
-    "activities": number,
-    "buffer": number
+    "flights": NUMBER,
+    "accommodation": NUMBER,
+    "food": NUMBER,
+    "activities": NUMBER,
+    "transport": NUMBER,
+    "buffer": NUMBER
   },
   "days": [
     {
       "dayNumber": 1,
-      "date": "2025-10-15",
-      "title": "Arrival & Beach Exploration",
+      "date": "DATE",
+      "title": "TITLE",
       "activities": [
         {
-          "time": "09:00 AM",
-          "name": "Place Name",
-          "description": "What to do here",
-          "cost": 0,
+          "time": "09:00",
+          "name": "Activity",
+          "description": "Description",
+          "cost": NUMBER,
           "duration": "2 hours",
-          "icon": "🏖",
           "type": "activity"
         }
       ]
@@ -127,6 +141,46 @@ export async function POST(request: NextRequest) {
       travelers: Number(travelers),
       budget: Number(budget),
     };
+
+    // Validate budget is realistic
+    const minBudgetPerPersonPerDay: Record<string, number> = {
+      "paris": 15000,
+      "london": 16000,
+      "goa": 1500,
+      "bangkok": 2000,
+      "bali": 2500,
+      "dubai": 5000,
+      "delhi": 1000,
+      "mumbai": 1500,
+      "rajasthan": 1200,
+      "kerala": 1800,
+    };
+
+    const start = new Date(String(startDate));
+    const end = new Date(String(endDate));
+    const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+
+    let dailyMin = 3000;
+    const destLower = String(destination).toLowerCase();
+    for (const [key, value] of Object.entries(minBudgetPerPersonPerDay)) {
+      if (destLower.includes(key)) {
+        dailyMin = value;
+        break;
+      }
+    }
+
+    const minBudgetRequired = dailyMin * Number(travelers) * days;
+
+    if (Number(budget) < minBudgetRequired) {
+      return NextResponse.json({
+        error: true,
+        message: `Budget too low for ${destination}`,
+        minimum_required: minBudgetRequired,
+        travelers: travelers,
+        days: days,
+        suggestion: `Minimum budget needed: ₹${minBudgetRequired.toLocaleString('en-IN')}. Try a cheaper destination or increase budget.`
+      }, { status: 400 });
+    }
 
     try {
       const itinerary = await generateWithOpenAI(itineraryRequest);
