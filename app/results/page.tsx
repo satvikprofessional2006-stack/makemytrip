@@ -32,6 +32,7 @@ import {
   type ItineraryRequest,
 } from "@/lib/itinerary-api";
 import ItineraryLoadingOverlay from "@/components/ItineraryLoadingOverlay";
+import { DestinationReviews } from "@/components/DestinationReviews";
 
 const activityTypeConfig: Record<DayActivity["type"], { label: string; color: string; bg: string; icon: string }> = {
   food:          { label: "Food & Dining", color: "#F59E0B", bg: "#FFFBEB", icon: "🍽️" },
@@ -697,6 +698,10 @@ function ResultsContent() {
                     ))}
                   </TabsContent>
                 </Tabs>
+
+                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
+                  <DestinationReviews destination={destination} />
+                </div>
               </div>
 
               {/* Right sidebar */}
