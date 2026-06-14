@@ -33,6 +33,8 @@ import {
 } from "@/lib/itinerary-api";
 import ItineraryLoadingOverlay from "@/components/ItineraryLoadingOverlay";
 import { DestinationReviews } from "@/components/DestinationReviews";
+import { WeatherWidget } from "@/components/WeatherWidget";
+import { ShareTripProfessional } from "@/components/ShareTripProfessional";
 
 const activityTypeConfig: Record<DayActivity["type"], { label: string; color: string; bg: string; icon: string }> = {
   food:          { label: "Food & Dining", color: "#F59E0B", bg: "#FFFBEB", icon: "🍽️" },
@@ -263,7 +265,7 @@ function ResultsContent() {
   
   const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
+
 
   const [prefs, setPrefs] = useState({
     style: "⚖ Balanced",
@@ -291,6 +293,13 @@ function ResultsContent() {
   const [itinerary, setItinerary] = useState<ItineraryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [shareUrl, setShareUrl] = useState("");
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      setShareUrl(window.location.href);
+    });
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -375,11 +384,7 @@ function ResultsContent() {
     setRefreshKey((k) => k + 1);
   };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+
 
   if (loading) {
     return <ItineraryLoadingOverlay />;
@@ -475,50 +480,14 @@ function ResultsContent() {
                     )}
                     {isSaving ? "Saving..." : saved ? "Saved ✓" : user ? "Save This Trip" : "Sign in to Save Trip"}
                   </Button>
-                  <div className="relative">
-                    <Button
-                      variant="ghost"
-                      onClick={() => setIsShareOpen(!isShareOpen)}
-                      className="gap-2 text-white hover:bg-white/10 border border-white/20 h-11"
-                    >
-                      <Share2 className="w-4 h-4" />
-                      Share
-                    </Button>
-                    
-                    {isShareOpen && (
-                      <>
-                        <div className="fixed inset-0 z-[150] bg-black/40 sm:bg-transparent" onClick={() => setIsShareOpen(false)} />
-                        <div className="fixed top-1/2 left-4 right-4 -translate-y-1/2 sm:absolute sm:top-[calc(100%+0.5rem)] sm:right-0 sm:left-auto sm:translate-y-0 sm:w-[280px] bg-white rounded-2xl shadow-2xl z-[160] p-5 border border-gray-100 flex flex-col gap-3 animate-scale-in text-left origin-center sm:origin-top-right">
-                          <h3 className="font-bold text-gray-900 mb-1">Share This Trip Plan</h3>
-                          
-                          <Button 
-                            className="w-full justify-start gap-3 bg-[#25D366] hover:bg-[#20b858] text-white font-bold h-11 rounded-xl"
-                            onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`Check out my ${itinerary.destination} trip plan on Travelopedia!`)}`, "_blank")}
-                          >
-                            <span className="text-xl leading-none">📱</span> Share on WhatsApp
-                          </Button>
-
-                          <Button 
-                            className="w-full justify-start gap-3 bg-blue-600 hover:bg-blue-700 text-white font-bold h-11 rounded-xl"
-                            onClick={handleCopyLink}
-                          >
-                            <span className="text-xl leading-none">🔗</span> {copied ? "✓ Copied!" : "Copy Link"}
-                          </Button>
-
-                          <Button 
-                            className="w-full justify-start gap-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold h-11 rounded-xl"
-                            onClick={() => window.location.href = `mailto:?subject=Check out my trip plan`}
-                          >
-                            <span className="text-xl leading-none">📧</span> Share via Email
-                          </Button>
-
-                          <p className="text-sm text-gray-500 mt-2 text-center">
-                            Anyone with the link can view this plan for free
-                          </p>
-                        </div>
-                      </>
-                    )}
-                  </div>
+                  <Button
+                    variant="ghost"
+                    onClick={() => setIsShareOpen(!isShareOpen)}
+                    className="gap-2 text-white hover:bg-white/10 border border-white/20 h-11"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share
+                  </Button>
                   <Button
                     variant="ghost"
                     className="gap-2 text-white hover:bg-white/10 border border-white/20 h-11"
@@ -699,7 +668,7 @@ function ResultsContent() {
                   </TabsContent>
                 </Tabs>
 
-                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
+                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800 space-y-6">
                   <DestinationReviews destination={destination} />
                 </div>
               </div>
@@ -728,26 +697,27 @@ function ResultsContent() {
                 </div>
 
                 {/* Weather */}
-                <div
-                  className="rounded-2xl p-5 text-white"
-                  style={{ background: "linear-gradient(135deg, #0096C7, #00B4D8)" }}
-                >
-                  <h3 className="font-black mb-3">🌤️ Weather Forecast</h3>
-                  <div className="grid grid-cols-4 gap-2 text-center text-sm">
-                    {["Mon", "Tue", "Wed", "Thu"].map((day, index) => (
-                      <div key={day} className="bg-white/15 rounded-xl p-2.5">
-                        <div className="text-white/70 text-sm mb-1">{day}</div>
-                        <div className="text-lg">☀️</div>
-                        <div className="font-bold text-sm">{28 + (index % 4)}°C</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <WeatherWidget destination={destination} />
               </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* Share Dialog */}
+      <Dialog open={isShareOpen} onOpenChange={setIsShareOpen}>
+        <DialogContent className="sm:max-w-xl w-full p-0 border-0 bg-transparent shadow-none">
+          {shareUrl && (
+            <ShareTripProfessional
+              destination={destination}
+              tripUrl={shareUrl}
+              days={itinerary?.duration || 1}
+              travelers={travelers}
+              budget={budget}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Booking Dialog */}
       <Dialog open={isBooking} onOpenChange={setIsBooking}>

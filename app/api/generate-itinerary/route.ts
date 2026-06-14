@@ -144,16 +144,26 @@ export async function POST(request: NextRequest) {
 
     // Validate budget is realistic
     const minBudgetPerPersonPerDay: Record<string, number> = {
-      "paris": 15000,
-      "london": 16000,
+      "paris": 8000,
+      "london": 9000,
       "goa": 1500,
       "bangkok": 2000,
       "bali": 2500,
       "dubai": 5000,
       "delhi": 1000,
       "mumbai": 1500,
-      "rajasthan": 1200,
+      "jaipur": 1200,
+      "rajasthan": 1300,
       "kerala": 1800,
+      "maldives": 4000,
+      "singapore": 3500,
+      "japan": 6000,
+      "new york": 8000,
+      "barcelona": 5000,
+      "amsterdam": 5000,
+      "sydney": 7000,
+      "hong kong": 4000,
+      "thailand": 1800,
     };
 
     const start = new Date(String(startDate));
