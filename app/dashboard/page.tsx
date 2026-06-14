@@ -94,6 +94,7 @@ export default function DashboardPage() {
   const [trips, setTrips] = useState<SavedTrip[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fallbackDates, setFallbackDates] = useState<Record<string, { start: string; end: string }>>({});
 
   useEffect(() => {
     let mounted = true;
@@ -130,6 +131,17 @@ export default function DashboardPage() {
           };
         });
         setTrips(mappedTrips);
+
+        // Precompute fallback dates on client to keep render pure
+        const now = Date.now();
+        const dates: Record<string, { start: string; end: string }> = {};
+        mappedTrips.forEach(trip => {
+          dates[String(trip.id)] = {
+            start: trip.startDate || new Date(now + 7 * 86400000).toISOString().split("T")[0],
+            end: trip.endDate || new Date(now + (7 + trip.duration) * 86400000).toISOString().split("T")[0]
+          };
+        });
+        setFallbackDates(dates);
       }
       if (mounted) setLoading(false);
     };
@@ -235,6 +247,7 @@ export default function DashboardPage() {
 
               {!loading && trips.map((trip) => {
                 const cfg = statusConfig[trip.status];
+                const fDates = fallbackDates[String(trip.id)] || { start: "", end: "" };
                 return (
                   <div
                     key={trip.id}
@@ -301,7 +314,7 @@ export default function DashboardPage() {
                       )}
 
                       <Link
-                        href={`/results?destination=${encodeURIComponent(trip.destination)}&travelers=${trip.travelers}&budget=${trip.budget}&startDate=${trip.startDate || new Date(Date.now() + 7 * 86400000).toISOString().split("T")[0]}&endDate=${trip.endDate || new Date(Date.now() + (7 + trip.duration) * 86400000).toISOString().split("T")[0]}`}
+                        href={`/results?destination=${encodeURIComponent(trip.destination)}&travelers=${trip.travelers}&budget=${trip.budget}&startDate=${trip.startDate || fDates.start}&endDate=${trip.endDate || fDates.end}`}
                       >
                         <Button
                           size="sm"

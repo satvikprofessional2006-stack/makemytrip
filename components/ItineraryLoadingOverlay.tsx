@@ -18,7 +18,7 @@ export default function ItineraryLoadingOverlay() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    setMounted(true);
+    const frame = requestAnimationFrame(() => setMounted(true));
 
     const progressTimer = setTimeout(() => setProgress(90), 50);
     const textInterval = setInterval(() => {
@@ -26,6 +26,7 @@ export default function ItineraryLoadingOverlay() {
     }, 1200);
 
     return () => {
+      cancelAnimationFrame(frame);
       clearTimeout(progressTimer);
       clearInterval(textInterval);
     };

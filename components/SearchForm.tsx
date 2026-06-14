@@ -76,21 +76,16 @@ export default function SearchForm() {
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [minimumBudget, setMinimumBudget] = useState<number | null>(null);
-
-  useEffect(() => {
+  const minimumBudget = (() => {
     if (form.destination && form.startDate && form.endDate && form.travelers) {
       const start = new Date(form.startDate);
       const end = new Date(form.endDate);
       const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
       const travelers = parseInt(form.travelers, 10);
-      
-      const minBudget = getMinimumBudget(form.destination, days, travelers);
-      setMinimumBudget(minBudget);
-    } else {
-      setMinimumBudget(null);
+      return getMinimumBudget(form.destination, days, travelers);
     }
-  }, [form.destination, form.startDate, form.endDate, form.travelers]);
+    return null;
+  })();
 
   const handleDestinationChange = (val: string) => {
     setForm({ ...form, destination: val });

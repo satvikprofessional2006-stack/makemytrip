@@ -318,10 +318,10 @@ function ResultsContent() {
           setItinerary(data);
           setLoading(false);
         }
-      } catch (err: any) {
+      } catch (err) {
         if (!cancelled) {
           setLoading(false);
-          setError(err.message || "Something went wrong, please try again");
+          setError(err instanceof Error ? err.message : "Something went wrong, please try again");
         }
       }
     }
