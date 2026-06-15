@@ -706,7 +706,7 @@ function ResultsContent() {
 
       {/* Share Dialog */}
       <Dialog open={isShareOpen} onOpenChange={setIsShareOpen}>
-        <DialogContent className="sm:max-w-xl w-full p-0 border-0 bg-transparent shadow-none">
+        <DialogContent className="sm:max-w-xl w-full p-0 border-0 bg-transparent shadow-none max-h-[95vh] overflow-y-auto no-scrollbar">
           {shareUrl && (
             <ShareTripProfessional
               destination={destination}
