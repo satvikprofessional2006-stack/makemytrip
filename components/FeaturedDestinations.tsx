@@ -145,7 +145,7 @@ export default function FeaturedDestinations() {
                 className="h-full block"
               >
                 <div
-                  className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full flex flex-col"
+                  className="group bg-white rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-slate-150 overflow-hidden transition-all duration-300 hover:shadow-[0_20px_45px_rgba(0,85,204,0.06)] hover:-translate-y-1 h-full flex flex-col"
                 >
                   {/* Image */}
                   <div className="relative overflow-hidden h-52 shrink-0">
@@ -155,12 +155,12 @@ export default function FeaturedDestinations() {
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
                     {/* Trending badge */}
                     {dest.trending && (
                       <div
-                        className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full text-white text-xs font-bold"
+                        className="absolute top-3 left-3 flex items-center gap-1 px-3 py-1 rounded-full text-white text-[10px] font-extrabold uppercase tracking-wider"
                         style={{ backgroundColor: "#FF6B35" }}
                       >
                         <TrendingUp className="w-3 h-3" />
@@ -169,32 +169,32 @@ export default function FeaturedDestinations() {
                     )}
 
                     {/* Rating */}
-                    <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full">
-                      <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                      <span className="text-xs font-bold text-gray-800">{dest.rating}</span>
+                    <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-full shadow-sm">
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                      <span className="text-[10px] font-black text-gray-800">{dest.rating}</span>
                     </div>
 
                     {/* Name overlay */}
                     <div className="absolute bottom-3 left-3 right-3">
                       <div className="flex items-end justify-between">
                         <div>
-                          <h3 className="text-white text-xl font-black">{dest.name}</h3>
-                          <p className="text-white/80 text-sm flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5" />
+                          <h3 className="text-white text-xl font-black tracking-tight">{dest.name}</h3>
+                          <p className="text-white/90 text-xs flex items-center gap-1 font-semibold mt-0.5">
+                            <MapPin className="w-3.5 h-3.5 text-orange-400" />
                             {dest.country}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-white/70 text-xs">from</p>
-                          <p className="text-white font-bold text-base">{dest.priceFrom}</p>
+                          <p className="text-white/80 text-[10px] uppercase font-bold tracking-wider">from</p>
+                          <p className="text-white font-black text-lg leading-tight">{dest.priceFrom}</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Card body */}
-                  <div className="p-4 flex flex-col flex-1">
-                    <p className="text-gray-500 text-sm mb-4 line-clamp-2">{dest.description}</p>
+                  <div className="p-5 flex flex-col flex-1">
+                    <p className="text-slate-500 text-sm mb-5 leading-relaxed line-clamp-2">{dest.description}</p>
 
                     <div className="mt-auto">
                       <div className="flex items-center justify-between">
@@ -203,9 +203,9 @@ export default function FeaturedDestinations() {
                             <Badge
                               key={tag}
                               variant="secondary"
-                              className="text-xs font-medium px-2 py-0.5 rounded-full border-0"
+                              className="text-[10px] font-bold px-2.5 py-0.5 rounded-full border-0 uppercase tracking-wider"
                               style={{
-                                backgroundColor: tagColors[tag] + "18",
+                                backgroundColor: tagColors[tag] + "12",
                                 color: tagColors[tag] || "#374151",
                               }}
                             >
@@ -213,15 +213,15 @@ export default function FeaturedDestinations() {
                             </Badge>
                           ))}
                         </div>
-                        <div className="flex items-center gap-1 text-gray-400 text-xs">
-                          <Clock className="w-3.5 h-3.5" />
+                        <div className="flex items-center gap-1 text-slate-400 text-xs font-semibold">
+                          <Clock className="w-3.5 h-3.5 text-[#0055CC]" />
                           {dest.duration}
                         </div>
                       </div>
 
                       <div
-                        className="mt-4 w-full py-2.5 rounded-xl text-sm font-semibold text-center text-white transition-all duration-200 group-hover:shadow-lg"
-                        style={{ backgroundColor: "#0055CC" }}
+                        className="mt-5 w-full py-3 rounded-xl text-xs font-extrabold text-center text-white transition-all duration-300 group-hover:shadow-[0_8px_20px_rgba(0,85,204,0.25)] uppercase tracking-wider cursor-pointer"
+                        style={{ background: "linear-gradient(135deg, #0055CC 0%, #0044BB 100%)" }}
                       >
                         Plan This Trip →
                       </div>
@@ -234,11 +234,10 @@ export default function FeaturedDestinations() {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-14">
           <Button
             variant="outline"
-            className="px-8 py-3 h-auto rounded-full border-2 font-semibold text-base transition-all duration-200 hover:text-white"
-            style={{ borderColor: "#0055CC", color: "#0055CC" }}
+            className="px-8 py-3.5 h-auto rounded-full border-2 border-[#0055CC] text-[#0055CC] font-bold text-sm uppercase tracking-wider transition-all duration-300 hover:bg-[#0055CC] hover:text-white hover:shadow-[0_8px_25px_rgba(0,85,204,0.15)] cursor-pointer"
           >
             Explore All Destinations →
           </Button>

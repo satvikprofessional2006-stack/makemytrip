@@ -15,7 +15,6 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
 
 interface SavedTrip {
   id: string | number;
@@ -163,14 +162,14 @@ export default function DashboardPage() {
   const upcoming = trips.filter(t => t.status === "upcoming").length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F8F9FB]">
       <Navbar />
       <div className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4">
           {/* Profile header */}
           <div
-            className="rounded-2xl p-6 md:p-8 mb-8 text-white"
-            style={{ background: "linear-gradient(135deg, #001A4D 0%, #0055CC 60%, #003D30 100%)" }}
+            className="rounded-3xl p-6 md:p-8 mb-8 text-white shadow-xl"
+            style={{ background: "linear-gradient(135deg, #0055CC 0%, #0077B6 50%, #00A878 100%)" }}
           >
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
               <Avatar className="w-16 h-16 border-2 border-white/30">
@@ -182,12 +181,12 @@ export default function DashboardPage() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <h1 className="text-2xl font-black mb-0.5">Welcome, {user?.email}</h1>
-                <p className="text-white/70 text-sm">Your personal trip collection & travel history</p>
+                <h1 className="text-2xl font-black mb-0.5 tracking-tight">Welcome, {user?.email}</h1>
+                <p className="text-white/80 text-sm font-semibold">Your personal trip collection & travel history</p>
               </div>
               <Link href="/">
                 <Button
-                  className="gap-2 text-white font-semibold"
+                  className="gap-2 text-white font-extrabold px-6 rounded-xl hover:shadow-[0_8px_20px_rgba(255,107,53,0.3)] transition-all cursor-pointer"
                   style={{ backgroundColor: "#FF6B35" }}
                 >
                   <PlusCircle className="w-4 h-4" />
@@ -204,10 +203,10 @@ export default function DashboardPage() {
                 { label: "Upcoming", value: upcoming, icon: Plane },
                 { label: "Total Budget", value: formatINR(totalBudget), icon: IndianRupee },
               ].map(({ label, value, icon: Icon }) => (
-                <div key={label} className="bg-white/10 rounded-xl p-4 text-center">
-                  <Icon className="w-5 h-5 text-white/70 mx-auto mb-2" />
+                <div key={label} className="bg-black/10 rounded-2xl p-4 text-center border border-white/5">
+                  <Icon className="w-5 h-5 text-white/80 mx-auto mb-2" />
                   <div className="text-2xl font-black text-white">{value}</div>
-                  <div className="text-white/60 text-xs font-medium">{label}</div>
+                  <div className="text-white/70 text-xs font-semibold mt-0.5">{label}</div>
                 </div>
               ))}
             </div>
@@ -226,19 +225,19 @@ export default function DashboardPage() {
               </div>
 
               {loading && (
-                <div className="bg-white rounded-2xl p-12 flex flex-col items-center justify-center shadow-sm border border-gray-100">
+                <div className="bg-white rounded-3xl p-12 flex flex-col items-center justify-center shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-slate-100">
                   <div className="w-8 h-8 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-4" />
                   <p className="text-gray-500 font-medium">Loading your trips...</p>
                 </div>
               )}
               
               {!loading && trips.length === 0 && (
-                <div className="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
+                <div className="bg-white rounded-3xl p-12 text-center shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-slate-100">
                   <Globe className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-gray-500 font-semibold mb-2">No trips yet</h3>
                   <p className="text-gray-400 text-sm mb-4">Start planning your first adventure!</p>
                   <Link href="/">
-                    <Button style={{ backgroundColor: "#0055CC" }} className="text-white">
+                    <Button style={{ backgroundColor: "#0055CC" }} className="text-white font-semibold rounded-xl">
                       Plan a Trip
                     </Button>
                   </Link>
@@ -251,7 +250,7 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={trip.id}
-                    className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col sm:flex-row card-hover"
+                    className="bg-white rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-slate-100 overflow-hidden flex flex-col sm:flex-row card-hover transition-all duration-300 hover:shadow-[0_15px_40px_rgba(0,85,204,0.04)]"
                   >
                     {/* Image */}
                     <div className="sm:w-40 h-36 sm:h-auto shrink-0 overflow-hidden relative">
@@ -332,11 +331,11 @@ export default function DashboardPage() {
             </div>
 
             {/* Right sidebar */}
-            <div className="space-y-5">
+            <div className="space-y-6">
               {/* Travel progress */}
-              <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-                <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5" style={{ color: "#0055CC" }} />
+              <div className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-slate-100/80 card-hover transition-all duration-300 hover:shadow-[0_15px_40px_rgba(0,85,204,0.04)]">
+                <h3 className="font-black text-gray-900 mb-5 flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-[#0055CC]" />
                   Travel Stats
                 </h3>
                 <div className="space-y-4">
@@ -345,35 +344,45 @@ export default function DashboardPage() {
                     { label: "Countries Visited", value: 3, max: 10, color: "#0055CC" },
                     { label: "Days Travelled", value: trips.filter(t => t.status === "completed").reduce((s, t) => s + t.duration, 0), max: 30, color: "#FF6B35" },
                   ].map(({ label, value, max, color }) => (
-                    <div key={label}>
-                      <div className="flex justify-between text-sm mb-1.5">
-                        <span className="text-gray-600 font-medium">{label}</span>
-                        <span className="font-bold" style={{ color }}>{value}</span>
+                    <div key={label} className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-semibold mb-0.5">
+                        <span className="text-gray-500">{label}</span>
+                        <span className="font-black" style={{ color }}>{value} / {max}</span>
                       </div>
-                      <Progress value={(value / max) * 100} className="h-2" />
+                      <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${max > 0 ? Math.min(100, (value / max) * 100) : 0}%`,
+                            backgroundColor: color
+                          }}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Wishlist teaser */}
-              <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-slate-100/80 card-hover transition-all duration-300 hover:shadow-[0_15px_40px_rgba(0,85,204,0.04)]">
                 <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-red-400" />
+                  <Heart className="w-5 h-5 text-red-500 fill-red-500 animate-pulse" />
                   Wishlist
                 </h3>
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {["Santorini, Greece", "Kyoto, Japan", "Patagonia, Argentina"].map((dest) => (
                     <Link
                       key={dest}
                       href={`/results?destination=${encodeURIComponent(dest)}&travelers=2`}
-                      className="flex items-center justify-between gap-2 py-2.5 border-b border-gray-50 last:border-0 hover:text-blue-600 transition-colors group"
+                      className="flex items-center justify-between gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-all duration-300 border border-transparent hover:border-slate-100/80 group"
                     >
-                      <div className="flex items-center gap-2.5">
-                        <MapPin className="w-4 h-4 text-gray-300 group-hover:text-blue-400 transition-colors" />
-                        <span className="text-sm font-medium text-gray-700 group-hover:text-blue-700">{dest}</span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 shrink-0">
+                          <MapPin className="w-4 h-4" />
+                        </div>
+                        <span className="text-sm font-bold text-gray-700 group-hover:text-[#0055CC] transition-colors">{dest}</span>
                       </div>
-                      <span className="text-xs text-gray-400 group-hover:text-blue-500">Plan →</span>
+                      <span className="text-xs font-bold text-[#0055CC] opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300 shrink-0">Plan →</span>
                     </Link>
                   ))}
                 </div>
@@ -381,19 +390,22 @@ export default function DashboardPage() {
 
               {/* AI recommendation */}
               <div
-                className="rounded-2xl p-5 text-white"
-                style={{ background: "linear-gradient(135deg, #FF6B35, #f7523a)" }}
+                className="rounded-[2rem] p-6 text-white shadow-xl hover:shadow-[0_20px_40px_rgba(255,107,53,0.15)] transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden"
+                style={{ background: "linear-gradient(135deg, #FF6B35 0%, #f7523a 100%)" }}
               >
-                <div className="flex items-center gap-2 mb-2">
+                {/* Decorative background shape */}
+                <div className="absolute right-[-10%] top-[-10%] w-24 h-24 rounded-full bg-white/10 blur-md pointer-events-none" />
+                
+                <div className="flex items-center gap-2 mb-3">
                   <TrendingUp className="w-5 h-5" />
-                  <span className="font-bold text-sm">AI Recommendation</span>
+                  <span className="font-extrabold text-sm uppercase tracking-wider">AI Recommendation</span>
                 </div>
-                <p className="text-white/90 text-sm mb-4">
-                  Based on your travel history, you&apos;d love <strong>Kerala Backwaters</strong> next — a perfect blend of nature and culture!
+                <p className="text-white/90 text-sm font-medium mb-5 leading-relaxed">
+                  Based on your travel history, you&apos;d love <strong>Kerala Backwaters</strong> next — a perfect blend of serene nature and rich culture!
                 </p>
                 <Link href="/results?destination=Kerala%2C%20India&travelers=2">
                   <Button
-                    className="bg-white hover:bg-white/90 font-bold text-sm w-full"
+                    className="bg-white hover:bg-white/95 font-bold text-sm w-full py-5 rounded-2xl transition-all duration-300 hover:shadow-lg cursor-pointer"
                     style={{ color: "#FF6B35" }}
                   >
                     Explore Kerala →

@@ -51,8 +51,8 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled || !isHome
-          ? "bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100"
-          : "bg-[rgba(8,12,22,0.5)] backdrop-blur-[16px] border-b border-[rgba(255,255,255,0.05)]"
+          ? "bg-white/80 backdrop-blur-md shadow-[0_2px_15px_-3px_rgba(0,0,0,0.02),0_4px_6px_-2px_rgba(0,0,0,0.01)] border-b border-slate-100"
+          : "bg-transparent border-b border-white/10"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -80,18 +80,15 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                   pathname === link.href
-                    ? "text-white drop-shadow-md"
+                    ? scrolled || !isHome
+                      ? "text-[#0055CC] bg-blue-50/80"
+                      : "text-white bg-white/20"
                     : scrolled || !isHome
-                    ? "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                    : "text-white/90 hover:text-white hover:bg-white/20 drop-shadow-lg"
+                    ? "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                    : "text-white/80 hover:text-white hover:bg-white/10"
                 }`}
-                style={
-                  pathname === link.href
-                    ? { backgroundColor: "#0055CC" }
-                    : {}
-                }
               >
                 {link.label}
               </Link>
@@ -189,16 +186,11 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                className={`px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
                   pathname === link.href
-                    ? "text-white"
-                    : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    ? "text-[#0055CC] bg-blue-50/80"
+                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-50"
                 }`}
-                style={
-                  pathname === link.href
-                    ? { backgroundColor: "#0055CC" }
-                    : {}
-                }
               >
                 {link.label}
               </Link>

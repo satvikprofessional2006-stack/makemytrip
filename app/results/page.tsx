@@ -70,12 +70,12 @@ function DayCard({ day, index, itinerary }: { day: ItineraryData["days"][0]; ind
 
   return (
     <div
-      className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-slide-up"
+      className="bg-white rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-slate-100 overflow-hidden animate-slide-up transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.03)]"
       style={{ animationDelay: `${index * 0.1}s` }}
     >
       {/* Day header */}
       <button
-        className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between p-5 hover:bg-slate-50/50 transition-colors cursor-pointer"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
       >
@@ -84,34 +84,34 @@ function DayCard({ day, index, itinerary }: { day: ItineraryData["days"][0]; ind
             className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-white font-black shadow-md shrink-0"
             style={{ background: "linear-gradient(135deg, #0055CC, #00A878)" }}
           >
-            <span className="text-sm leading-none">Day</span>
-            <span className="text-lg leading-none">{day.day}</span>
+            <span className="text-xs leading-none opacity-90 font-bold uppercase tracking-wider">Day</span>
+            <span className="text-lg leading-none font-black">{day.day}</span>
           </div>
           <div className="text-left">
-            <div className="font-bold text-gray-900">{day.theme}</div>
-            <div className="text-gray-400 text-sm flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5" />
+            <div className="font-extrabold text-slate-800 text-base leading-snug">{day.theme}</div>
+            <div className="text-slate-400 text-xs font-semibold flex items-center gap-1.5 mt-1">
+              <Calendar className="w-3.5 h-3.5 text-[#0055CC]" />
               {day.date}
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <div className="hidden sm:block text-right">
-            <div className="text-sm text-gray-400">Day budget</div>
-            <div className="font-bold text-gray-900">
+            <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Day Budget</div>
+            <div className="font-black text-slate-850 text-sm mt-0.5">
               {formatINR(dailyTotal)}
             </div>
           </div>
-          {open ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+          {open ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
         </div>
       </button>
 
       {/* Activities */}
       {open && (
-        <div className="border-t border-gray-50">
-          <div className="relative pl-14 pr-5 py-4 space-y-5">
+        <div className="border-t border-slate-50 bg-slate-50/10">
+          <div className="relative pl-14 pr-5 py-6 space-y-6">
             {/* Timeline line */}
-            <div className="timeline-line" style={{ left: "28px" }} />
+            <div className="timeline-line" style={{ left: "28px", width: "1.5px" }} />
 
             {day.activities.map((activity, ai) => {
               const cfg = activityTypeConfig[activity.type];
@@ -120,35 +120,35 @@ function DayCard({ day, index, itinerary }: { day: ItineraryData["days"][0]; ind
                   {/* Timeline dot */}
                   <div
                     className="timeline-dot absolute shrink-0"
-                    style={{ left: "-31px", top: "6px", backgroundColor: cfg.color, boxShadow: `0 0 0 3px ${cfg.color}` }}
+                    style={{ left: "-32px", top: "8px", width: "12px", height: "12px", backgroundColor: cfg.color, boxShadow: `0 0 0 4px white, 0 0 0 6px ${cfg.color}`, border: 'none' }}
                   />
 
-                  <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100 hover:border-gray-200 transition-colors">
-                    <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="flex-1 bg-slate-50/75 rounded-2xl p-5 border border-slate-100 hover:border-slate-200/80 hover:bg-white hover:shadow-[0_8px_25px_rgba(15,23,42,0.02)] transition-all duration-300">
+                    <div className="flex items-start justify-between gap-4 mb-2.5">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-blue-600 font-bold text-sm font-mono">{activity.time}</span>
-                        <span>{cfg.icon}</span>
-                        <h4 className="font-bold text-gray-900 text-sm">{activity.title}</h4>
+                        <span className="text-[#0055CC] font-bold text-xs font-mono bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100/50">{activity.time}</span>
+                        <span className="text-base leading-none">{cfg.icon}</span>
+                        <h4 className="font-extrabold text-slate-850 text-sm leading-snug">{activity.title}</h4>
                         <Badge
                           variant="secondary"
-                          className="text-sm font-medium border-0 px-2"
+                          className="text-[10px] font-bold border-0 px-2.5 py-0.5 rounded-full uppercase tracking-wider"
                           style={{ backgroundColor: cfg.bg, color: cfg.color }}
                         >
                           {cfg.label}
                         </Badge>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="font-bold text-gray-900 text-sm">{formatINR(activity.cost)}</div>
-                        <div className="text-gray-400 text-sm flex items-center gap-0.5 justify-end">
-                          <Clock className="w-3 h-3" />
+                        <div className="font-extrabold text-slate-800 text-sm">{formatINR(activity.cost)}</div>
+                        <div className="text-slate-400 text-xs font-semibold flex items-center gap-1 justify-end mt-0.5">
+                          <Clock className="w-3.5 h-3.5 text-[#0055CC]" />
                           {activity.duration}
                         </div>
                       </div>
                     </div>
-                    <p className="text-gray-500 text-sm leading-relaxed">{activity.description}</p>
+                    <p className="text-slate-500 text-sm leading-relaxed font-medium">{activity.description}</p>
                     {activity.tip && (
-                      <div className="mt-2.5 flex items-start gap-1.5 text-sm text-amber-700 bg-amber-50 rounded-lg px-3 py-2 border border-amber-100">
-                        <span className="text-base leading-none">💡</span>
+                      <div className="mt-3 flex items-start gap-2 text-xs font-semibold text-amber-800 bg-amber-50/60 rounded-xl px-4 py-3 border border-amber-150/40 leading-relaxed shadow-sm">
+                        <span className="text-sm leading-none shrink-0">💡</span>
                         <span><strong>Pro tip:</strong> {activity.tip}</span>
                       </div>
                     )}
@@ -158,31 +158,31 @@ function DayCard({ day, index, itinerary }: { day: ItineraryData["days"][0]; ind
             })}
 
             {/* Daily Expense Summary */}
-            <div className="mt-8 pt-5 border-t border-gray-100 pl-0 sm:pl-8">
-              <h4 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                <IndianRupee className="w-4 h-4 text-green-600" />
+            <div className="mt-8 pt-6 border-t border-slate-100 pl-0 sm:pl-8">
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4.5 flex items-center gap-2">
+                <IndianRupee className="w-4 h-4 text-emerald-600" />
                 Daily Expense Breakdown
               </h4>
-              <div className="space-y-2 text-sm bg-gray-50 p-4 rounded-xl border border-gray-100">
-                <div className="flex justify-between text-gray-600">
+              <div className="space-y-3 text-sm bg-slate-50/40 p-5 rounded-2xl border border-slate-100 shadow-sm">
+                <div className="flex justify-between text-slate-600 font-medium">
                   <span className="flex items-center gap-2">🏨 Hotel / Stay</span>
-                  <span className="font-semibold">{formatINR(dailyHotel)}</span>
+                  <span className="font-bold text-slate-800">{formatINR(dailyHotel)}</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-slate-600 font-medium">
                   <span className="flex items-center gap-2">🍽️ Meals (Breakfast + Lunch + Dinner)</span>
-                  <span className="font-semibold">{formatINR(dailyMeals)}</span>
+                  <span className="font-bold text-slate-800">{formatINR(dailyMeals)}</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-slate-600 font-medium">
                   <span className="flex items-center gap-2">🚗 Transport</span>
-                  <span className="font-semibold">{formatINR(dailyTransport)}</span>
+                  <span className="font-bold text-slate-800">{formatINR(dailyTransport)}</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-slate-600 font-medium">
                   <span className="flex items-center gap-2">🎯 Planned Activities</span>
-                  <span className="font-semibold">{formatINR(activitiesTotal)}</span>
+                  <span className="font-bold text-slate-800">{formatINR(activitiesTotal)}</span>
                 </div>
-                <div className="flex justify-between text-gray-900 font-black pt-3 border-t border-gray-200 mt-2">
+                <div className="flex justify-between text-slate-800 font-black pt-3 border-t border-slate-200 mt-2 text-base">
                   <span>Day Total</span>
-                  <span className="text-blue-600">{formatINR(dailyTotal)}</span>
+                  <span className="text-[#0055CC]">{formatINR(dailyTotal)}</span>
                 </div>
               </div>
             </div>
@@ -203,8 +203,8 @@ function BudgetChart({ data }: { data: ItineraryData["budget"] }) {
   }, []);
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-      <h3 className="font-black text-gray-900 text-lg mb-5">💰 Budget Breakdown</h3>
+    <div className="bg-white rounded-3xl p-6.5 shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-slate-100/90 animate-slide-up" style={{ animationDelay: "0.2s" }}>
+      <h3 className="font-extrabold text-slate-800 text-base mb-5">💰 Budget Breakdown</h3>
 
       {/* Visual bar */}
       <div className="flex rounded-full overflow-hidden h-4 mb-6 bg-gray-100">
@@ -420,14 +420,14 @@ function ResultsContent() {
           <div className="max-w-7xl mx-auto px-4">
             {/* Header */}
             <div
-              className="rounded-2xl p-6 md:p-8 mb-8 text-white"
+              className="rounded-3xl p-6 md:p-8 mb-8 text-white shadow-xl"
               style={{
-                background: "linear-gradient(135deg, #001A4D 0%, #0055CC 50%, #003D30 100%)",
+                background: "linear-gradient(135deg, #0055CC 0%, #0077B6 50%, #00A878 100%)",
               }}
             >
               <button
                 onClick={() => router.back()}
-                className="flex items-center gap-2 text-white/70 hover:text-white text-sm mb-4 transition-colors"
+                className="flex items-center gap-2 text-white/80 hover:text-white text-sm mb-5 transition-colors font-bold cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to search
@@ -435,31 +435,31 @@ function ResultsContent() {
 
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                 <div>
-                  <div className="flex items-center gap-2 text-white/70 text-sm mb-2">
-                    <MapPin className="w-4 h-4" />
+                  <div className="flex items-center gap-2 text-white/85 text-xs font-black uppercase tracking-wider mb-2">
+                    <MapPin className="w-4 h-4 text-orange-400" />
                     AI-Generated Itinerary
                   </div>
-                  <h1 className="text-3xl md:text-4xl font-black mb-3">{itinerary.destination}</h1>
-                  <div className="flex flex-wrap gap-4 text-white/80 text-sm">
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="w-4 h-4" />
+                  <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">{itinerary.destination}</h1>
+                  <div className="flex flex-wrap gap-4 text-white/90 text-sm font-semibold">
+                    <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm">
+                      <Calendar className="w-4 h-4 text-orange-400" />
                       {itinerary.duration} days
                     </span>
-                    <span className="flex items-center gap-1.5">
-                      <Users className="w-4 h-4" />
+                    <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm">
+                      <Users className="w-4 h-4 text-orange-400" />
                       {travelers} traveler{travelers > 1 ? "s" : ""}
                     </span>
-                    <span className="flex items-center gap-1.5">
-                      <IndianRupee className="w-4 h-4" />
+                    <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm">
+                      <IndianRupee className="w-4 h-4 text-orange-400" />
                       {formatINR(itinerary.usedBudget)} planned
                     </span>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2.5">
                   <Button
                     onClick={handleBookTrip}
-                    className="gap-2 font-semibold shadow-xl hover:shadow-orange-500/30 transition-all btn-premium-hover text-white h-11"
+                    className="gap-2 font-bold shadow-lg hover:shadow-orange-500/20 transition-all btn-premium-hover text-white h-11.5 px-6 rounded-xl cursor-pointer"
                     style={{ background: "linear-gradient(135deg, #FF6B35 0%, #f7523a 100%)" }}
                   >
                     <Zap className="w-4 h-4" />
@@ -468,7 +468,7 @@ function ResultsContent() {
                   <Button
                     onClick={user ? handleSave : () => router.push("/login")}
                     disabled={saved || isSaving}
-                    className="gap-2 font-semibold h-11"
+                    className="gap-2 font-bold h-11.5 px-5 rounded-xl transition-all cursor-pointer"
                     style={{ backgroundColor: saved ? "#00A878" : "rgba(255,255,255,0.15)", color: "white" }}
                   >
                     {isSaving ? (
@@ -478,19 +478,19 @@ function ResultsContent() {
                     ) : (
                       <Bookmark className="w-4 h-4" />
                     )}
-                    {isSaving ? "Saving..." : saved ? "Saved ✓" : user ? "Save This Trip" : "Sign in to Save Trip"}
+                    {isSaving ? "Saving..." : saved ? "Saved ✓" : user ? "Save This Trip" : "Sign in to Save"}
                   </Button>
                   <Button
                     variant="ghost"
                     onClick={() => setIsShareOpen(!isShareOpen)}
-                    className="gap-2 text-white hover:bg-white/10 border border-white/20 h-11"
+                    className="gap-2 text-white hover:bg-white/10 border border-white/15 h-11.5 px-4 rounded-xl cursor-pointer"
                   >
                     <Share2 className="w-4 h-4" />
                     Share
                   </Button>
                   <Button
                     variant="ghost"
-                    className="gap-2 text-white hover:bg-white/10 border border-white/20 h-11"
+                    className="gap-2 text-white hover:bg-white/10 border border-white/15 h-11.5 px-4 rounded-xl cursor-pointer"
                   >
                     <Download className="w-4 h-4" />
                     PDF
@@ -498,25 +498,25 @@ function ResultsContent() {
                   <Button
                     onClick={() => setIsEditPanelOpen(true)}
                     variant="ghost"
-                    className="gap-2 text-white hover:bg-white/10 border border-white/20 h-11"
+                    className="gap-2 text-white hover:bg-white/10 border border-white/15 h-11.5 px-4 rounded-xl cursor-pointer"
                   >
                     <Settings2 className="w-4 h-4" />
-                    Edit This Plan
+                    Edit Plan
                   </Button>
                 </div>
               </div>
 
               {/* Budget gauge */}
-              <div className="mt-6 bg-white/10 rounded-xl p-4">
-                <div className="flex flex-wrap justify-between gap-2 text-sm text-white/80 mb-2">
-                  <span>Budget Usage</span>
+              <div className="mt-7 bg-black/10 rounded-2xl p-4.5 border border-white/5">
+                <div className="flex flex-wrap justify-between gap-2 text-sm font-semibold text-white/90 mb-2.5">
+                  <span>Budget Usage Tracker</span>
                   <span>
                     {formatINR(itinerary.usedBudget)} planned of {formatINR(itinerary.totalBudget)}
                   </span>
                 </div>
-                <div className="h-2.5 rounded-full bg-white/20 overflow-hidden">
+                <div className="h-3 rounded-full bg-white/20 overflow-hidden shadow-inner">
                   <div
-                    className="h-full rounded-full transition-all duration-1000"
+                    className="h-full rounded-full transition-all duration-1000 shadow-md"
                     style={{
                       width: `${getBudgetUsagePercent(itinerary)}%`,
                       background:
@@ -528,10 +528,10 @@ function ResultsContent() {
                     }}
                   />
                 </div>
-                <div className="flex flex-wrap justify-between gap-2 mt-2 text-xs text-white/60">
+                <div className="flex flex-wrap justify-between gap-2 mt-2.5 text-xs text-white/70 font-semibold">
                   <span>{getBudgetUsagePercent(itinerary)}% of your max budget</span>
                   {getBudgetRemaining(itinerary) > 0 && (
-                    <span className="text-green-300">
+                    <span className="text-emerald-300 font-bold">
                       {formatINR(getBudgetRemaining(itinerary))} remaining
                     </span>
                   )}
@@ -544,14 +544,14 @@ function ResultsContent() {
               {/* Left: Itinerary tabs */}
               <div className="lg:col-span-2">
                 <Tabs defaultValue="itinerary">
-                  <TabsList className="mb-5 bg-white border border-gray-200 p-1 rounded-xl h-auto gap-1 flex-nowrap overflow-x-auto whitespace-nowrap justify-start w-full no-scrollbar">
-                    <TabsTrigger value="itinerary" className="rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white font-medium">
+                  <TabsList className="mb-5 bg-white border border-slate-200 p-1 rounded-xl h-auto gap-1 flex-nowrap overflow-x-auto whitespace-nowrap justify-start w-full no-scrollbar">
+                    <TabsTrigger value="itinerary" className="rounded-lg data-[state=active]:bg-[#0055CC] data-[state=active]:text-white font-bold transition-all duration-200 cursor-pointer">
                       📅 Day-wise Plan
                     </TabsTrigger>
-                    <TabsTrigger value="hotels" className="rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white font-medium">
+                    <TabsTrigger value="hotels" className="rounded-lg data-[state=active]:bg-[#0055CC] data-[state=active]:text-white font-bold transition-all duration-200 cursor-pointer">
                       🏨 Hotels
                     </TabsTrigger>
-                    <TabsTrigger value="flights" className="rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white font-medium">
+                    <TabsTrigger value="flights" className="rounded-lg data-[state=active]:bg-[#0055CC] data-[state=active]:text-white font-bold transition-all duration-200 cursor-pointer">
                       ✈️ Flights
                     </TabsTrigger>
                   </TabsList>

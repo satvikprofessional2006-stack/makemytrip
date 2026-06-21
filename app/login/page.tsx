@@ -39,30 +39,33 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#F8F9FB]">
       {/* Background gradients */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-100 blur-[100px] opacity-70" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-teal-100 blur-[100px] opacity-70" />
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-50/70 blur-[120px] opacity-80" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-orange-50/50 blur-[120px] opacity-80" />
 
-      <div className="relative w-full max-w-md p-8 bg-white/80 backdrop-blur-xl border border-gray-100 rounded-3xl shadow-2xl">
+      <div className="relative w-full max-w-md p-10 bg-white border border-slate-100 rounded-[2rem] shadow-[0_20px_50px_rgba(0,85,204,0.04)]">
         <div className="flex flex-col items-center mb-8">
-          <Link href="/" className="flex items-center gap-2 mb-6 group">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-[#0055CC] to-[#00A878]">
-              <Globe className="w-6 h-6 text-white" />
+          <Link href="/" className="flex items-center gap-3 mb-6 group transition-transform duration-300 hover:scale-[1.02]">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md bg-gradient-to-br from-[#0055CC] to-[#00A878]">
+              <Globe className="w-5 h-5 text-white" />
             </div>
+            <span className="text-2xl font-black text-gray-900 tracking-tight">
+              trave<span style={{ color: "#FF6B35" }}>-o-</span>pedia
+            </span>
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-            {isLogin ? "Welcome back" : "Create an account"}
+          <h1 className="text-2xl font-black text-gray-900 tracking-tight text-center">
+            {isLogin ? "Welcome back" : "Create your account"}
           </h1>
-          <p className="text-gray-500 mt-2 text-sm">
+          <p className="text-gray-500 mt-2 text-sm text-center">
             {isLogin
-              ? "Enter your details to sign in to your account"
-              : "Sign up to start planning your dream journey"}
+              ? "Enter your details to access your custom itineraries"
+              : "Sign up to begin planning your next adventure"}
           </p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100">
+          <div className="mb-6 p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-medium">
             {error}
           </div>
         )}
@@ -71,11 +74,11 @@ export default function LoginPage() {
           <Button
             type="button"
             variant="outline"
-            className="w-full py-6 font-medium text-gray-700 bg-white hover:bg-gray-50 border-gray-200"
+            className="w-full py-6 font-bold text-gray-700 bg-white hover:bg-gray-50 border-gray-200/80 rounded-2xl transition-all duration-300 hover:shadow-md cursor-pointer"
             onClick={handleGoogleSignIn}
             disabled={loading}
           >
-            <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 mr-3 shrink-0" viewBox="0 0 24 24">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                 fill="#4285F4"
@@ -99,10 +102,10 @@ export default function LoginPage() {
 
         <div className="relative mb-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200" />
+            <div className="w-full border-t border-gray-100" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-white/80 text-gray-500 font-medium">
+            <span className="px-4 bg-white text-gray-400 font-medium">
               Or continue with email
             </span>
           </div>
@@ -110,26 +113,26 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5 ml-1">
               Email address
             </label>
             <Input
               type="email"
               name="email"
               required
-              className="w-full py-6 bg-white border-gray-200 focus:ring-blue-500"
+              className="w-full py-6 px-4 bg-gray-50/50 border-gray-200/80 rounded-2xl focus-visible:ring-[#0055CC] focus-visible:border-[#0055CC] focus-visible:bg-white transition-all duration-300"
               placeholder="you@example.com"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5 ml-1">
               Password
             </label>
             <Input
               type="password"
               name="password"
               required
-              className="w-full py-6 bg-white border-gray-200 focus:ring-blue-500"
+              className="w-full py-6 px-4 bg-gray-50/50 border-gray-200/80 rounded-2xl focus-visible:ring-[#0055CC] focus-visible:border-[#0055CC] focus-visible:bg-white transition-all duration-300"
               placeholder="••••••••"
               minLength={6}
             />
@@ -137,7 +140,8 @@ export default function LoginPage() {
 
           <Button
             type="submit"
-            className="w-full py-6 font-semibold text-white bg-gradient-to-r from-[#0055CC] to-[#00A878] hover:opacity-90 transition-opacity shadow-lg"
+            className="w-full py-6 font-bold text-white transition-all duration-300 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 cursor-pointer mt-2"
+            style={{ backgroundColor: "#0055CC" }}
             disabled={loading}
           >
             {loading ? "Please wait..." : isLogin ? "Sign In" : "Sign Up"}
@@ -151,7 +155,7 @@ export default function LoginPage() {
               setIsLogin(!isLogin);
               setError(null);
             }}
-            className="font-semibold text-[#0055CC] hover:text-[#00A878] transition-colors"
+            className="font-bold text-[#0055CC] hover:text-[#003d99] transition-colors"
           >
             {isLogin ? "Sign up" : "Sign in"}
           </button>

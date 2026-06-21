@@ -4,21 +4,16 @@ export default function OceanBackground() {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
 
-      {/* ── Your real underwater ocean video ── */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover scale-110"
+      {/* ── High-quality scenic travel background image ── */}
+      <img
+        src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&q=80"
+        alt="Beautiful travel landscape background"
+        className="absolute inset-0 w-full h-full object-cover"
         style={{
           objectPosition: "center center",
-          filter: "brightness(0.75) saturate(0.9) contrast(1.1)",
-          transform: "scale(1.05)",
+          filter: "brightness(0.6) contrast(1.05) saturate(1.05)",
         }}
-      >
-        <source src="/ocean.mp4" type="video/mp4" />
-      </video>
+      />
 
       {/* Cinematic Edge Blur Overlay — much softer edge blur */}
       <div
