@@ -12,7 +12,7 @@ const testimonials = [
   {
     name: "Priya Sharma",
     location: "Mumbai → Goa",
-    text: "TRAVELOPEDIA planned our family trip in under 5 minutes. The budget breakdown was spot-on and the hotel suggestions were perfect!",
+    text: "Trave-o-pedia planned our family trip in under 5 minutes. The budget breakdown was spot-on and the hotel suggestions were perfect!",
     avatar: "PS",
     rating: 5,
   },
@@ -191,7 +191,7 @@ export default function HomePage() {
             Ready to Start Your Adventure?
           </h2>
           <p className="text-white/70 mb-8 text-lg">
-            Join 2 million+ travellers who plan smarter with TRAVELOPEDIA.
+            Join 2 million+ travellers who plan smarter with TRAVE-O-PEDIA.
             Your dream trip is just a search away.
           </p>
           <button

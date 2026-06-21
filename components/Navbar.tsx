@@ -70,7 +70,7 @@ export default function Navbar() {
                 scrolled || !isHome ? "text-gray-900" : "text-white drop-shadow-lg"
               }`}
             >
-              TRAVEL<span style={{ color: "#FF6B35" }}>OPEDIA</span>
+              TRAVE-<span style={{ color: "#FF6B35" }}>O-PEDIA</span>
             </span>
           </Link>
 

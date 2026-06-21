@@ -44,7 +44,7 @@ export interface ApiItinerary {
   }[];
 }
 
-export const ITINERARY_STORAGE_KEY = "travelopedia_current_itinerary";
+export const ITINERARY_STORAGE_KEY = "trave-o-pedia_current_itinerary";
 
 const BUDGET_BREAKDOWN_KEYS = [
   "flights",

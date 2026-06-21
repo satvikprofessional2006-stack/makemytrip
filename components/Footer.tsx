@@ -100,7 +100,7 @@ export default function Footer() {
                 <Globe className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-black text-white">
-                TRAVEL<span style={{ color: "#FF6B35" }}>OPEDIA</span>
+                TRAVE-<span style={{ color: "#FF6B35" }}>O-PEDIA</span>
               </span>
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-5">
@@ -119,7 +119,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2.5 text-sm text-gray-400">
                 <Mail className="w-4 h-4 text-orange-400 shrink-0" />
-                hello@travelopedia.in
+                hello@trave-o-pedia.in
               </div>
             </div>
 
@@ -178,7 +178,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} TRAVELOPEDIA Pvt. Ltd. · All rights reserved · Made with ❤️ in India
+            © {new Date().getFullYear()} TRAVE-O-PEDIA Pvt. Ltd. · All rights reserved · Made with ❤️ in India
           </p>
           <div className="flex items-center gap-4">
             {/* Payment logos */}

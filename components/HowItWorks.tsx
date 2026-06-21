@@ -54,7 +54,7 @@ export default function HowItWorks() {
             🗺️ Simple Process
           </span>
           <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">
-            How TRAVELOPEDIA Works
+            How TRAVE-O-PEDIA Works
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto">
             From dream to destination in 4 simple steps. AI-powered planning, human-curated perfection.

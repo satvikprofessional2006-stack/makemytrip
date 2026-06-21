@@ -127,7 +127,7 @@ export function DestinationReviews({ destination }: { destination: string }) {
             Traveler Reviews
           </h2>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-            Real experiences shared by Travelopedia explorers for {destination}
+            Real experiences shared by Trave-o-pedia explorers for {destination}
           </p>
         </div>
         <Badge variant="outline" className="w-fit border-[#0055CC] text-[#0055CC] font-bold py-1 px-3 dark:border-[#0055CC]/50 dark:text-blue-400">
