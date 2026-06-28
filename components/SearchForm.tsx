@@ -170,17 +170,17 @@ export default function SearchForm() {
 
       <form
         onSubmit={handleSearch}
-        className="glass-card-dark rounded-3xl p-6 md:p-8 w-full max-w-4xl mx-auto border border-slate-100 shadow-[0_20px_50px_rgba(15,23,42,0.08)] bg-white relative"
+        className="glass-card-dark rounded-2xl p-6 md:p-8 w-full max-w-4xl mx-auto relative"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Destination */}
           <div className="lg:col-span-3 relative">
-            <label className="block text-slate-500 text-[11px] font-extrabold uppercase tracking-wider mb-2">
+            <label className="block text-white/80 text-sm font-semibold uppercase tracking-wider mb-2">
               Where do you want to go?
             </label>
             <div className="relative">
               <MapPin
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4.5 h-4.5 pointer-events-none"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 w-4 h-4 pointer-events-none z-10"
               />
               <Input
                 id="destination-input"
@@ -190,22 +190,22 @@ export default function SearchForm() {
                 onChange={(e) => handleDestinationChange(e.target.value)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
                 onFocus={() => form.destination.length > 1 && setShowSuggestions(true)}
-                className={`pl-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#0055CC] focus:ring-4 focus:ring-blue-100/50 h-12.5 rounded-xl md:text-sm text-base transition-all ${errors.destination ? "border-red-400" : ""}`}
+                className={`pl-10 bg-black/20 border-white/30 text-white placeholder:text-white/60 focus:border-white focus:ring-white/20 h-12 rounded-xl md:text-sm text-base ${errors.destination ? "border-red-400" : ""}`}
                 autoComplete="off"
               />
               {showSuggestions && suggestions.length > 0 && (
-                <ul className="absolute top-full left-0 right-0 mt-1.5 bg-white rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] border border-slate-100 z-20 overflow-hidden divide-y divide-slate-50">
+                <ul className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-gray-100 z-20 overflow-hidden">
                   {suggestions.map((s) => (
                     <li
                       key={s}
-                      className="flex items-center gap-2.5 px-4.5 py-3 cursor-pointer hover:bg-blue-50/50 text-slate-700 text-sm font-semibold transition-colors"
+                      className="flex items-center gap-2 px-4 py-3 cursor-pointer hover:bg-blue-50 text-gray-700 text-sm transition-colors"
                       onMouseDown={() => {
                         setForm({ ...form, destination: s });
                         setShowSuggestions(false);
                         clearFieldError("destination");
                       }}
                     >
-                      <MapPin className="w-4 h-4 text-[#0055CC] shrink-0" />
+                      <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                       {s}
                     </li>
                   ))}
@@ -213,17 +213,17 @@ export default function SearchForm() {
               )}
             </div>
             {errors.destination && (
-              <p className="text-red-500 text-xs font-semibold mt-1.5 pl-1">{errors.destination}</p>
+              <p className="text-red-400 text-sm mt-1.5">{errors.destination}</p>
             )}
           </div>
 
           {/* Start Date */}
           <div>
-            <label className="block text-slate-500 text-[11px] font-extrabold uppercase tracking-wider mb-2">
+            <label className="block text-white/80 text-sm font-semibold uppercase tracking-wider mb-2">
               Departure Date
             </label>
             <div className="relative">
-              <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4.5 h-4.5 pointer-events-none" />
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 w-4 h-4 pointer-events-none z-10" />
               <Input
                 id="start-date-input"
                 type="date"
@@ -232,22 +232,22 @@ export default function SearchForm() {
                   setForm({ ...form, startDate: e.target.value });
                   clearFieldError("startDate");
                 }}
-                className={`pl-11 bg-slate-50 border-slate-200 text-slate-900 focus:bg-white focus:border-[#0055CC] focus:ring-4 focus:ring-blue-100/50 h-12.5 rounded-xl [color-scheme:light] md:text-sm text-base transition-all ${errors.startDate ? "border-red-400" : ""}`}
+                className={`pl-10 bg-black/20 border-white/30 text-white focus:border-white h-12 rounded-xl md:text-sm text-base ${errors.startDate ? "border-red-400" : ""}`}
                 min={new Date().toISOString().split("T")[0]}
               />
             </div>
             {errors.startDate && (
-              <p className="text-red-500 text-xs font-semibold mt-1.5 pl-1">{errors.startDate}</p>
+              <p className="text-red-400 text-sm mt-1.5">{errors.startDate}</p>
             )}
           </div>
 
           {/* End Date */}
           <div>
-            <label className="block text-slate-500 text-[11px] font-extrabold uppercase tracking-wider mb-2">
+            <label className="block text-white/80 text-sm font-semibold uppercase tracking-wider mb-2">
               Return Date
             </label>
             <div className="relative">
-              <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4.5 h-4.5 pointer-events-none" />
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 w-4 h-4 pointer-events-none z-10" />
               <Input
                 id="end-date-input"
                 type="date"
@@ -256,22 +256,22 @@ export default function SearchForm() {
                   setForm({ ...form, endDate: e.target.value });
                   clearFieldError("endDate");
                 }}
-                className={`pl-11 bg-slate-50 border-slate-200 text-slate-900 focus:bg-white focus:border-[#0055CC] focus:ring-4 focus:ring-blue-100/50 h-12.5 rounded-xl [color-scheme:light] md:text-sm text-base transition-all ${errors.endDate ? "border-red-400" : ""}`}
+                className={`pl-10 bg-black/20 border-white/30 text-white focus:border-white h-12 rounded-xl md:text-sm text-base ${errors.endDate ? "border-red-400" : ""}`}
                 min={form.startDate || new Date().toISOString().split("T")[0]}
               />
             </div>
             {errors.endDate && (
-              <p className="text-red-500 text-xs font-semibold mt-1.5 pl-1">{errors.endDate}</p>
+              <p className="text-red-400 text-sm mt-1.5">{errors.endDate}</p>
             )}
           </div>
 
           {/* Travelers */}
           <div>
-            <label className="block text-slate-500 text-[11px] font-extrabold uppercase tracking-wider mb-2">
+            <label className="block text-white/80 text-sm font-semibold uppercase tracking-wider mb-2">
               Travelers
             </label>
             <div className="relative">
-              <Users className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4.5 h-4.5 pointer-events-none z-10" />
+              <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 w-4 h-4 pointer-events-none z-10" />
               <Select
                 value={form.travelers}
                 onValueChange={(v) => {
@@ -281,13 +281,13 @@ export default function SearchForm() {
               >
                 <SelectTrigger
                   id="travelers-select"
-                  className={`pl-11 bg-slate-50 border-slate-200 text-slate-900 h-12.5 rounded-xl focus:bg-white focus:border-[#0055CC] focus:ring-4 focus:ring-blue-100/50 data-[state=open]:border-[#0055CC] md:text-sm text-base transition-all ${errors.travelers ? "border-red-400" : ""}`}
+                  className={`pl-10 bg-black/20 border-white/30 text-white h-12 rounded-xl focus:border-white data-[state=open]:border-white md:text-sm text-base ${errors.travelers ? "border-red-400" : ""}`}
                 >
                   <SelectValue placeholder="Travelers" />
                 </SelectTrigger>
                 <SelectContent>
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-                    <SelectItem key={n} value={String(n)} className="font-semibold text-slate-700">
+                    <SelectItem key={n} value={String(n)}>
                       {n} {n === 1 ? "Traveler" : "Travelers"}
                     </SelectItem>
                   ))}
@@ -295,22 +295,22 @@ export default function SearchForm() {
               </Select>
             </div>
             {errors.travelers && (
-              <p className="text-red-500 text-xs font-semibold mt-1.5 pl-1">{errors.travelers}</p>
+              <p className="text-red-400 text-sm mt-1.5">{errors.travelers}</p>
             )}
           </div>
 
           {/* Budget */}
           <div className="relative">
-            <label className="block text-slate-500 text-[11px] font-extrabold uppercase tracking-wider mb-2 h-[20px]">
+            <label className="block text-white/80 text-sm font-semibold uppercase tracking-wider mb-2 h-[20px]">
               Max Budget (INR)
               {minimumBudget !== null && (
-                <span className="text-[#FF6B35] ml-2 normal-case tracking-normal font-bold">
+                <span className="text-orange-400 ml-2 normal-case tracking-normal">
                   Min: ₹{new Intl.NumberFormat('en-IN').format(minimumBudget)}
                 </span>
               )}
             </label>
             <div className="relative">
-              <IndianRupee className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4.5 h-4.5 pointer-events-none" />
+              <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 w-4 h-4 pointer-events-none" />
               <Input
                 id="budget-input"
                 type="number"
@@ -320,17 +320,17 @@ export default function SearchForm() {
                   setForm({ ...form, budget: e.target.value });
                   clearFieldError("budget");
                 }}
-                className={`pl-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#0055CC] focus:ring-4 focus:ring-blue-100/50 h-12.5 rounded-xl md:text-sm text-base transition-all ${errors.budget ? "border-red-400" : ""}`}
+                className={`pl-10 bg-black/20 border-white/30 text-white placeholder:text-white/60 focus:border-white h-12 rounded-xl md:text-sm text-base ${errors.budget ? "border-red-400" : ""}`}
                 min={minimumBudget !== null ? minimumBudget : "0"}
                 step="1000"
               />
             </div>
             {errors.budget && (
-              <p className="text-red-500 text-xs font-semibold mt-1.5 pl-1 whitespace-nowrap">{errors.budget}</p>
+              <p className="text-red-400 text-sm mt-1.5 whitespace-nowrap">{errors.budget}</p>
             )}
             {!errors.budget && minimumBudget !== null && Number(form.budget) > 0 && Number(form.budget) < minimumBudget && (
-              <p className="text-red-500 text-xs font-semibold mt-1.5 flex items-center gap-1 pl-1 whitespace-nowrap">
-                <span>❌</span> 
+              <p className="text-red-400 text-sm mt-1.5 flex items-center gap-1.5 whitespace-nowrap">
+                <span className="text-xs">❌</span> 
                 <span>Minimum ₹{new Intl.NumberFormat('en-IN').format(minimumBudget)}</span>
               </p>
             )}
@@ -342,14 +342,14 @@ export default function SearchForm() {
               id="search-btn"
               type="submit"
               disabled={loading || (minimumBudget !== null && Number(form.budget) > 0 && Number(form.budget) < minimumBudget)}
-              className={`w-full h-12.5 text-base font-bold rounded-xl btn-premium-hover gap-2 text-white transition-all cursor-pointer ${
+              className={`w-full h-12 text-base font-bold rounded-xl btn-premium-hover gap-2 text-white transition-all ${
                 minimumBudget !== null && Number(form.budget) > 0 && Number(form.budget) < minimumBudget
-                  ? "bg-slate-300 hover:bg-slate-300 opacity-50 cursor-not-allowed text-slate-500"
+                  ? "bg-gray-500 hover:bg-gray-500 opacity-50 cursor-not-allowed"
                   : ""
               }`}
               style={{
                 background: minimumBudget !== null && Number(form.budget) > 0 && Number(form.budget) < minimumBudget
-                  ? "#E2E8F0" 
+                  ? "#6B7280" 
                   : "linear-gradient(135deg, #FF6B35 0%, #f7523a 100%)",
               }}
             >
@@ -367,12 +367,12 @@ export default function SearchForm() {
         </div>
 
         {submitError && (
-          <p className="text-red-500 text-xs font-semibold mt-4 text-center">{submitError}</p>
+          <p className="text-red-400 text-sm mt-4 text-center font-medium">{submitError}</p>
         )}
 
         {/* Popular quick picks */}
-        <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t border-slate-100">
-          <span className="text-slate-400 text-xs font-bold uppercase tracking-wider self-center mr-1">Popular Quick Picks:</span>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <span className="text-white/50 text-sm font-medium self-center">Popular:</span>
           {["Goa", "Bali", "Rajasthan", "Maldives", "Ladakh"].map((dest) => (
             <button
               key={dest}
@@ -381,7 +381,7 @@ export default function SearchForm() {
                 setForm({ ...form, destination: dest + ", " + (dest === "Bali" ? "Indonesia" : dest === "Maldives" ? "Maldives" : "India") });
                 clearFieldError("destination");
               }}
-              className="text-xs px-3.5 py-2 rounded-full border border-slate-200/80 text-slate-600 hover:text-[#0055CC] hover:border-[#0055CC]/40 hover:bg-blue-50/50 transition-all duration-200 bg-slate-50/50 font-semibold cursor-pointer"
+              className="text-sm px-3 py-1.5 rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/50 hover:bg-white/10 transition-all duration-200"
             >
               {dest}
             </button>
