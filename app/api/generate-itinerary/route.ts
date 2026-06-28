@@ -43,38 +43,45 @@ REAL HOTEL & RESTAURANT NAMES BY DESTINATION:
 
 If destination is GOA or includes "Goa":
 Real Hotels: Taj Exotica, Sunbeam Holiday Resort, Nilaya Hermitage, Goan Heritage, Fort Aguada Resort
-Real Restaurants: Fisherman's Wharf, Pepper's, Thalassa, Cafe Bodega, Martin's Corner, Pousada by the Beach
-Real Activities: Fort Aguada, Dudhsagar Falls, Baga Beach, Anjuna Beach, Scuba Diving
+Real Restaurants: Fisherman's Wharf, Pepper's, Thalassa, Cafe Bodega, Martin's Corner
+Real Activities: Fort Aguada, Dudhsagar Falls, Baga Beach, Anjuna Beach
+FLIGHT PRICE: ₹3,500-₹5,000 (NEVER exceed ₹5,000, even if budget is higher)
 
 If destination is PARIS or includes "Paris":
-Real Hotels: Le Marais Hotel, Montmartre Inn, Latin Quarter Lodge, Hotel des Invalides
-Real Restaurants: L'Ami Jean, Bistro Paul Bert, Angelina, Cafe de Flore, Bouchon de Montmartre
-Real Activities: Eiffel Tower, Louvre Museum, Notre-Dame, Seine Cruise, Arc de Triomphe
+Real Hotels: Le Marais Hotel, Montmartre Inn, Latin Quarter Lodge
+Real Restaurants: L'Ami Jean, Bistro Paul Bert, Angelina, Cafe de Flore
+Real Activities: Eiffel Tower, Louvre, Notre-Dame, Seine Cruise
+FLIGHT PRICE: ₹24,000-₹32,000 (NEVER exceed ₹32,000)
 
 If destination is LONDON or includes "London":
-Real Hotels: South Kensington Lodge, King's Cross Inn, Westminster Hotel, Chelsea Inn
-Real Restaurants: Borough Market, Fish & Chips Shop, The Ivy, Afternoon Tea Places, Dishoom
-Real Activities: Big Ben, Tower of London, British Museum, Thames Cruise, Buckingham Palace
+Real Hotels: South Kensington Lodge, King's Cross Inn, Westminster Hotel
+Real Restaurants: Borough Market, The Ivy, Dishoom, Afternoon Tea
+Real Activities: Big Ben, Tower of London, British Museum, Thames Cruise
+FLIGHT PRICE: ₹22,000-₹30,000 (NEVER exceed ₹30,000)
 
 If destination is BANGKOK or includes "Bangkok":
-Real Hotels: Silom Thai House, Sukhumvit Backpackers, Riverside Lodge, Chakrabongse Mansion
-Real Restaurants: Pad Thai Stand, Khao Tom Market, Boat Noodles, Thai Dinner Cruise, Night Market
-Real Activities: Grand Palace, Floating Markets, Wat Arun, Tuk-Tuk Tour, Chao Phraya River
+Real Hotels: Silom Thai House, Sukhumvit Backpackers, Riverside Lodge
+Real Restaurants: Pad Thai Stand, Khao Tom Market, Boat Noodles, Night Market
+Real Activities: Grand Palace, Floating Markets, Wat Arun, Tuk-Tuk Tour
+FLIGHT PRICE: ₹10,000-₹15,000 (NEVER exceed ₹15,000)
 
 If destination is JAIPUR or includes "Jaipur":
 Real Hotels: Alsisar Haveli, Diggi Palace, Rambagh Palace, Samode Palace
-Real Restaurants: 1135 AD, Chokhi Dhani, Peacock Restaurant, Niros, Street Food Markets
-Real Activities: City Palace, Jantar Mantar, Hawa Mahal, Albert Hall, Johari Bazaar
+Real Restaurants: 1135 AD, Chokhi Dhani, Peacock Restaurant, Niros
+Real Activities: City Palace, Jantar Mantar, Hawa Mahal, Albert Hall
+FLIGHT PRICE: ₹4,000-₹6,000 (NEVER exceed ₹6,000)
 
 If destination is KERALA or includes "Kerala":
-Real Hotels: Munnar Plantation Resort, Kumarakom Backwaters, Beach Shack, Lake Palace
-Real Restaurants: Seafood Kitchen, Spice Garden, Kerala Samudra, Fishing Village Restaurant
-Real Activities: Backwater Cruise, Tea Plantation Tour, Kochi Fort, Beach Walk, Houseboat Ride
+Real Hotels: Munnar Plantation Resort, Kumarakom Backwaters, Beach Shack
+Real Restaurants: Seafood Kitchen, Spice Garden, Kerala Samudra
+Real Activities: Backwater Cruise, Tea Plantation, Kochi Fort, Houseboat Ride
+FLIGHT PRICE: ₹4,500-₹7,000 (NEVER exceed ₹7,000)
 
 If destination is RAJASTHAN or includes "Rajasthan":
 Real Hotels: Pushkar Heritage, Jodhpur Blue House, Udaipur Palace, Desert Camp
 Real Restaurants: Local Thali, Street Food, Desert Restaurant, Palace Cafe
 Real Activities: Camel Safari, Mehrangarh Fort, City Palace, Local Markets
+FLIGHT PRICE: ₹4,000-₹6,500 (NEVER exceed ₹6,500)
 
 BUDGET BREAKDOWN (must total exactly ₹${budget}):
 - Flights: ₹[EXACT amount]
@@ -84,6 +91,18 @@ BUDGET BREAKDOWN (must total exactly ₹${budget}):
 - Transport: ₹[EXACT amount]
 - Buffer: ₹[EXACT amount]
 TOTAL = ₹${budget}
+
+CRITICAL - FLIGHT PRICE LIMITS:
+⚠️ FLIGHTS have MAX LIMITS:
+- Goa flights: max ₹5,000 per person
+- Paris flights: max ₹32,000 per person
+- London flights: max ₹30,000 per person
+- Bangkok flights: max ₹15,000 per person
+- Jaipur flights: max ₹6,000 per person
+- Kerala flights: max ₹7,000 per person
+
+NEVER exceed these limits, even if total budget allows.
+The remaining budget must be allocated to: accommodation, food, activities, transport.
 
 IMPORTANT - USE REAL NAMES IN ACTIVITIES:
 ✅ "Breakfast at Fisherman's Wharf - ₹250" (CORRECT)

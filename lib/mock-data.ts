@@ -83,6 +83,44 @@ const activityTemplates: Record<string, DayActivity[][]> = {
   ],
 };
 
+const destinationMocks: Record<string, { hotels: string[]; restaurants: string[]; activities: string[] }> = {
+  goa: {
+    hotels: ["Taj Exotica", "Sunbeam Holiday Resort", "Nilaya Hermitage", "Goan Heritage", "Fort Aguada Resort"],
+    restaurants: ["Fisherman's Wharf", "Pepper's", "Thalassa", "Cafe Bodega", "Martin's Corner", "Pousada by the Beach"],
+    activities: ["Fort Aguada", "Dudhsagar Falls", "Baga Beach", "Anjuna Beach", "Scuba Diving"]
+  },
+  paris: {
+    hotels: ["Le Marais Hotel", "Montmartre Inn", "Latin Quarter Lodge", "Hotel des Invalides"],
+    restaurants: ["L'Ami Jean", "Bistro Paul Bert", "Angelina", "Cafe de Flore", "Bouchon de Montmartre"],
+    activities: ["Eiffel Tower", "Louvre Museum", "Notre-Dame", "Seine Cruise", "Arc de Triomphe"]
+  },
+  london: {
+    hotels: ["South Kensington Lodge", "King's Cross Inn", "Westminster Hotel", "Chelsea Inn"],
+    restaurants: ["Borough Market", "Fish & Chips Shop", "The Ivy", "Afternoon Tea Places", "Dishoom"],
+    activities: ["Big Ben", "Tower of London", "British Museum", "Thames Cruise", "Buckingham Palace"]
+  },
+  bangkok: {
+    hotels: ["Silom Thai House", "Sukhumvit Backpackers", "Riverside Lodge", "Chakrabongse Mansion"],
+    restaurants: ["Pad Thai Stand", "Khao Tom Market", "Boat Noodles", "Thai Dinner Cruise", "Night Market"],
+    activities: ["Grand Palace", "Floating Markets", "Wat Arun", "Tuk-Tuk Tour", "Chao Phraya River"]
+  },
+  jaipur: {
+    hotels: ["Alsisar Haveli", "Diggi Palace", "Rambagh Palace", "Samode Palace"],
+    restaurants: ["1135 AD", "Chokhi Dhani", "Peacock Restaurant", "Niros", "Street Food Markets"],
+    activities: ["City Palace", "Jantar Mantar", "Hawa Mahal", "Albert Hall", "Johari Bazaar"]
+  },
+  kerala: {
+    hotels: ["Munnar Plantation Resort", "Kumarakom Backwaters", "Beach Shack", "Lake Palace"],
+    restaurants: ["Seafood Kitchen", "Spice Garden", "Kerala Samudra", "Fishing Village Restaurant"],
+    activities: ["Backwater Cruise", "Tea Plantation Tour", "Kochi Fort", "Beach Walk", "Houseboat Ride"]
+  },
+  rajasthan: {
+    hotels: ["Pushkar Heritage", "Jodhpur Blue House", "Udaipur Palace", "Desert Camp"],
+    restaurants: ["Local Thali", "Street Food", "Desert Restaurant", "Palace Cafe"],
+    activities: ["Camel Safari", "Mehrangarh Fort", "City Palace", "Local Markets"]
+  }
+};
+
 function generateDays(
   destination: string,
   numDays: number,
@@ -105,6 +143,12 @@ function generateDays(
   const tripStart = startDate ? new Date(startDate) : new Date();
   if (!startDate) tripStart.setDate(tripStart.getDate() + 7);
 
+  // Match destination mocks
+  const destKey = Object.keys(destinationMocks).find(key => 
+    destination.toLowerCase().includes(key)
+  );
+  const mockData = destKey ? destinationMocks[destKey] : null;
+
   for (let i = 0; i < numDays; i++) {
     const dayDate = new Date(tripStart);
     dayDate.setDate(tripStart.getDate() + i);
@@ -114,10 +158,70 @@ function generateDays(
       day: i + 1,
       date: dayDate.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
       theme: themes[i % themes.length],
-      activities: templateActivities.map(act => ({
-        ...act,
-        cost: Math.round(act.cost * travelers * (0.9 + Math.random() * 0.2)),
-      })),
+      activities: templateActivities.map(act => {
+        let mappedTitle = act.title;
+        let mappedDesc = act.description;
+
+        if (mockData) {
+          if (act.title === "Breakfast at Hotel") {
+            mappedTitle = `Breakfast at ${mockData.restaurants[0]}`;
+            mappedDesc = `Enjoy a fresh, delicious breakfast at ${mockData.restaurants[0]} to start your day.`;
+          } else if (act.title === "City Orientation Walk") {
+            mappedTitle = `Orientation Walk to ${mockData.activities[0]}`;
+            mappedDesc = `Take a scenic walking tour heading towards ${mockData.activities[0]} with a local guide.`;
+          } else if (act.title === "Lunch at Local Restaurant") {
+            mappedTitle = `Lunch at ${mockData.restaurants[1]}`;
+            mappedDesc = `Savor authentic local delicacies for lunch at ${mockData.restaurants[1]}.`;
+          } else if (act.title === "Main Attraction Visit") {
+            mappedTitle = `Visit ${mockData.activities[1]}`;
+            mappedDesc = `Explore the famous ${mockData.activities[1]} and learn about its history.`;
+          } else if (act.title === "Sunset Viewpoint") {
+            mappedTitle = `Sunset at ${mockData.activities[2]}`;
+            mappedDesc = `Enjoy the sunset views from ${mockData.activities[2]}.`;
+          } else if (act.title === "Dinner & Local Entertainment") {
+            mappedTitle = `Dinner at ${mockData.restaurants[2]}`;
+            mappedDesc = `Dine at ${mockData.restaurants[2]} with great local food and pleasant ambiance.`;
+          } else if (act.title === "Early Morning Nature Walk") {
+            mappedTitle = `Nature Walk around ${mockData.activities[3]}`;
+            mappedDesc = `Breathe in the fresh morning air with a walk around the beautiful ${mockData.activities[3]}.`;
+          } else if (act.title === "Local Breakfast Café") {
+            mappedTitle = `Breakfast at ${mockData.restaurants[3]}`;
+            mappedDesc = `Sip tea or coffee with breakfast at the popular ${mockData.restaurants[3]}.`;
+          } else if (act.title === "Cultural Museum / Heritage Site") {
+            mappedTitle = `Visit ${mockData.activities[4]}`;
+            mappedDesc = `Explore the iconic heritage site of ${mockData.activities[4]}.`;
+          } else if (act.title === "Street Food Lunch") {
+            mappedTitle = `Lunch at ${mockData.restaurants[4 % mockData.restaurants.length]}`;
+            mappedDesc = `Taste the popular local street foods at ${mockData.restaurants[4 % mockData.restaurants.length]}.`;
+          } else if (act.title === "Adventure / Water Sports") {
+            mappedTitle = `Adventure Sport: ${mockData.activities[0]}`;
+            mappedDesc = `Get your adrenaline pumping with some thrill at ${mockData.activities[0]}.`;
+          } else if (act.title === "Sunset Cruise / River Ride") {
+            mappedTitle = `Evening Cruise at ${mockData.activities[3 % mockData.activities.length]}`;
+            mappedDesc = `Unwind on a relaxing cruise around ${mockData.activities[3 % mockData.activities.length]}.`;
+          } else if (act.title === "Yoga / Wellness Session") {
+            mappedTitle = `Morning Wellness Session`;
+          } else if (act.title === "Cooking Class") {
+            mappedTitle = `Local Cooking Class`;
+          } else if (act.title === "The Meal You Cooked!") {
+            mappedTitle = `Enjoy Your Home-cooked Meal`;
+          } else if (act.title === "Local Market Shopping") {
+            mappedTitle = `Shopping at Local Markets`;
+          } else if (act.title === "Spa / Massage") {
+            mappedTitle = `Relaxing Spa Treatment`;
+          } else if (act.title === "Farewell Dinner") {
+            mappedTitle = `Farewell Dinner at ${mockData.restaurants[5 % mockData.restaurants.length]}`;
+            mappedDesc = `A memorable final dinner at ${mockData.restaurants[5 % mockData.restaurants.length]} to conclude your trip.`;
+          }
+        }
+
+        return {
+          ...act,
+          title: mappedTitle,
+          description: mappedDesc,
+          cost: Math.round(act.cost * travelers * (0.9 + Math.random() * 0.2)),
+        };
+      }),
     });
   }
   return days;
@@ -158,7 +262,24 @@ export function generateItinerary(
     0
   );
 
-  const flightCost = Math.round(travelers * 8000 * scale);
+  const flightLimits: Record<string, { min: number; max: number }> = {
+    goa: { min: 3500, max: 5000 },
+    paris: { min: 24000, max: 32000 },
+    london: { min: 22000, max: 30000 },
+    bangkok: { min: 10000, max: 15000 },
+    jaipur: { min: 4000, max: 6000 },
+    kerala: { min: 4500, max: 7000 },
+    rajasthan: { min: 4000, max: 6500 }
+  };
+
+  const matchedKey = Object.keys(flightLimits).find(k => destination.toLowerCase().includes(k));
+  let baseFlightPrice = 8000;
+  if (matchedKey) {
+    const limit = flightLimits[matchedKey];
+    baseFlightPrice = limit.min + Math.random() * (limit.max - limit.min);
+  }
+
+  const flightCost = Math.round(travelers * baseFlightPrice * scale);
   const hotelCost = Math.round(duration * travelers * 3500 * scale);
   const foodCost = Math.round(scaledActivityTotal * 0.35);
   const transportCost = Math.round(travelers * 1500 * scale);
@@ -177,9 +298,16 @@ export function generateItinerary(
 
   const usedBudget = budgetBreakdown.reduce((sum, item) => sum + item.amount, 0);
 
+  // Match destination mocks for hotels
+  const destKey = Object.keys(destinationMocks).find(key => 
+    destination.toLowerCase().includes(key)
+  );
+  const mockData = destKey ? destinationMocks[destKey] : null;
+  const hotelOptionsList = mockData ? mockData.hotels : [];
+
   const hotels: HotelOption[] = [
     {
-      name: `The Grand ${destination.split(",")[0]} Palace`,
+      name: hotelOptionsList[0] || `The Grand ${destination.split(",")[0]} Palace`,
       type: "5-Star Luxury",
       rating: 4.8,
       pricePerNight: 8500,
@@ -187,7 +315,7 @@ export function generateItinerary(
       image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&q=80",
     },
     {
-      name: `${destination.split(",")[0]} Heritage Inn`,
+      name: hotelOptionsList[1] || `${destination.split(",")[0]} Heritage Inn`,
       type: "4-Star Boutique",
       rating: 4.5,
       pricePerNight: 4500,
@@ -195,7 +323,7 @@ export function generateItinerary(
       image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80",
     },
     {
-      name: "Budget Comfort Stays",
+      name: hotelOptionsList[2] || "Budget Comfort Stays",
       type: "3-Star Value",
       rating: 4.1,
       pricePerNight: 2200,
@@ -205,9 +333,9 @@ export function generateItinerary(
   ];
 
   const flights: FlightOption[] = [
-    { airline: "IndiGo", departure: "07:30", arrival: "09:45", duration: "2h 15m", price: travelers * 4500, stops: 0 },
-    { airline: "Air India", departure: "11:00", arrival: "13:40", duration: "2h 40m", price: travelers * 5200, stops: 0 },
-    { airline: "SpiceJet", departure: "15:30", arrival: "18:50", duration: "3h 20m", price: travelers * 3800, stops: 1 },
+    { airline: "IndiGo", departure: "07:30", arrival: "09:45", duration: "2h 15m", price: Math.round(travelers * baseFlightPrice * 0.9), stops: 0 },
+    { airline: "Air India", departure: "11:00", arrival: "13:40", duration: "2h 40m", price: Math.round(travelers * baseFlightPrice * 1.05), stops: 0 },
+    { airline: "SpiceJet", departure: "15:30", arrival: "18:50", duration: "3h 20m", price: Math.round(travelers * baseFlightPrice * 0.8), stops: 1 },
   ];
 
   return {

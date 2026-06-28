@@ -326,12 +326,6 @@ export function generateFallbackApiItinerary(
   const { budget } = request;
   const targetSpend = Math.round(budget * 0.88);
 
-  const accommodation = Math.round(targetSpend * 0.32);
-  const transport = Math.round(targetSpend * 0.22);
-  const food = Math.round(targetSpend * 0.22);
-  let activitiesBudget = Math.round(targetSpend * 0.19);
-  let buffer = targetSpend - accommodation - transport - food - activitiesBudget;
-
   const data = generateItinerary(
     request.destination,
     request.startDate,
@@ -341,13 +335,6 @@ export function generateFallbackApiItinerary(
   );
 
   const start = new Date(request.startDate);
-  const activitySum = data.days.reduce(
-    (sum, day) => sum + day.activities.reduce((s, a) => s + a.cost, 0),
-    0
-  );
-  const activityRatio =
-    activitySum > 0 ? activitiesBudget / activitySum : 1;
-
   const days = data.days.map((day) => {
     const date = new Date(start);
     date.setDate(start.getDate() + day.day - 1);
@@ -359,16 +346,19 @@ export function generateFallbackApiItinerary(
         time: activity.time,
         name: activity.title,
         description: activity.description,
-        cost: Math.max(0, Math.round(activity.cost * activityRatio)),
+        cost: activity.cost,
         duration: activity.duration,
         type: activity.type,
       })),
     };
   });
 
-  const actualActivitySum = sumActivityCosts(days);
-  activitiesBudget = actualActivitySum;
-  buffer = targetSpend - accommodation - transport - food - activitiesBudget;
+  const flights = data.budget.find(b => b.category === "Flights")?.amount || 0;
+  const accommodation = data.budget.find(b => b.category === "Hotels")?.amount || 0;
+  const transport = data.budget.find(b => b.category === "Transport")?.amount || 0;
+  const food = data.budget.find(b => b.category === "Food & Dining")?.amount || 0;
+  const activities = data.budget.find(b => b.category === "Activities")?.amount || 0;
+  const buffer = data.budget.find(b => b.category === "Miscellaneous")?.amount || 0;
 
   return clampApiItineraryToBudget(
     {
@@ -376,12 +366,12 @@ export function generateFallbackApiItinerary(
       totalDays: data.duration,
       totalCost: targetSpend,
       budgetBreakdown: {
-        flights: 0,
+        flights,
         accommodation,
         transport,
         food,
-        activities: activitiesBudget,
-        buffer: Math.max(0, buffer),
+        activities,
+        buffer,
       },
       days,
     },
