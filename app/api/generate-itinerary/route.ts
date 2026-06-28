@@ -24,17 +24,13 @@ async function generateWithOpenAI(request: ItineraryRequest) {
     (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
   );
 
-  const prompt = `You are a travel planning AI for India. IMPORTANT RULES:
+  const prompt = `You are an expert travel planner creating DESTINATION-SPECIFIC itineraries with REAL hotel and restaurant names.
 
-BUDGET IS ABSOLUTE - NEVER exceed it. NEVER leave unused budget > 5000.
-
-VALIDATION - Check if budget is realistic FIRST:
-- Paris per person minimum: ₹15,000-20,000/day (flights ₹25K-40K + hotel ₹5K + food ₹3K + activity ₹2K)
-- Goa per person: ₹1,500-2,500/day (hotel ₹1.5K + food ₹800 + activity ₹500)
-- Bangkok per person: ₹2,000-3,000/day
-- Delhi per person: ₹1,000-1,500/day
-
-IF BUDGET IS REALISTIC, create detailed itinerary:
+CRITICAL RULES:
+1. BUDGET IS ABSOLUTE - NEVER exceed ₹${budget}
+2. Use ONLY REAL specific names (hotels, restaurants, landmarks)
+3. Make it DESTINATION-SPECIFIC to ${destination}
+4. NO unused budget (difference < ₹1000)
 
 Trip Details:
 - Destination: ${destination}
@@ -43,24 +39,60 @@ Trip Details:
 - Total Budget: ₹${budget}
 - Per person per day: ₹${Math.round(budget / (days * travelers))}
 
-STRICT BUDGET BREAKDOWN (must total exactly = ₹${budget}):
-- Flights: ₹[EXACT]
-- Accommodation: ₹[EXACT] 
-- Food: ₹[EXACT]
-- Activities: ₹[EXACT]
-- Local Transport: ₹[EXACT]
-- Emergency Buffer: ₹[EXACT]
+REAL HOTEL & RESTAURANT NAMES BY DESTINATION:
+
+If destination is GOA or includes "Goa":
+Real Hotels: Taj Exotica, Sunbeam Holiday Resort, Nilaya Hermitage, Goan Heritage, Fort Aguada Resort
+Real Restaurants: Fisherman's Wharf, Pepper's, Thalassa, Cafe Bodega, Martin's Corner, Pousada by the Beach
+Real Activities: Fort Aguada, Dudhsagar Falls, Baga Beach, Anjuna Beach, Scuba Diving
+
+If destination is PARIS or includes "Paris":
+Real Hotels: Le Marais Hotel, Montmartre Inn, Latin Quarter Lodge, Hotel des Invalides
+Real Restaurants: L'Ami Jean, Bistro Paul Bert, Angelina, Cafe de Flore, Bouchon de Montmartre
+Real Activities: Eiffel Tower, Louvre Museum, Notre-Dame, Seine Cruise, Arc de Triomphe
+
+If destination is LONDON or includes "London":
+Real Hotels: South Kensington Lodge, King's Cross Inn, Westminster Hotel, Chelsea Inn
+Real Restaurants: Borough Market, Fish & Chips Shop, The Ivy, Afternoon Tea Places, Dishoom
+Real Activities: Big Ben, Tower of London, British Museum, Thames Cruise, Buckingham Palace
+
+If destination is BANGKOK or includes "Bangkok":
+Real Hotels: Silom Thai House, Sukhumvit Backpackers, Riverside Lodge, Chakrabongse Mansion
+Real Restaurants: Pad Thai Stand, Khao Tom Market, Boat Noodles, Thai Dinner Cruise, Night Market
+Real Activities: Grand Palace, Floating Markets, Wat Arun, Tuk-Tuk Tour, Chao Phraya River
+
+If destination is JAIPUR or includes "Jaipur":
+Real Hotels: Alsisar Haveli, Diggi Palace, Rambagh Palace, Samode Palace
+Real Restaurants: 1135 AD, Chokhi Dhani, Peacock Restaurant, Niros, Street Food Markets
+Real Activities: City Palace, Jantar Mantar, Hawa Mahal, Albert Hall, Johari Bazaar
+
+If destination is KERALA or includes "Kerala":
+Real Hotels: Munnar Plantation Resort, Kumarakom Backwaters, Beach Shack, Lake Palace
+Real Restaurants: Seafood Kitchen, Spice Garden, Kerala Samudra, Fishing Village Restaurant
+Real Activities: Backwater Cruise, Tea Plantation Tour, Kochi Fort, Beach Walk, Houseboat Ride
+
+If destination is RAJASTHAN or includes "Rajasthan":
+Real Hotels: Pushkar Heritage, Jodhpur Blue House, Udaipur Palace, Desert Camp
+Real Restaurants: Local Thali, Street Food, Desert Restaurant, Palace Cafe
+Real Activities: Camel Safari, Mehrangarh Fort, City Palace, Local Markets
+
+BUDGET BREAKDOWN (must total exactly ₹${budget}):
+- Flights: ₹[EXACT amount]
+- Accommodation: ₹[EXACT amount]
+- Food: ₹[EXACT amount]
+- Activities: ₹[EXACT amount]
+- Transport: ₹[EXACT amount]
+- Buffer: ₹[EXACT amount]
 TOTAL = ₹${budget}
 
-RULES:
-1. Flights cost realistic for ${travelers} people
-2. Hotel cost realistic for ${days} nights
-3. Food realistic for ${days} days
-4. All activities must fit budget
-5. NO unused budget (difference < ₹1000)
-6. Provide day-by-day breakdown with exact costs
+IMPORTANT - USE REAL NAMES IN ACTIVITIES:
+✅ "Breakfast at Fisherman's Wharf - ₹250" (CORRECT)
+✅ "Stay at Taj Exotica - ₹3,500/night" (CORRECT)
+✅ "Visit Fort Aguada - ₹100" (CORRECT)
+❌ "Breakfast at Hotel" (WRONG)
+❌ "Lunch at Local Restaurant" (WRONG)
 
-Return ONLY valid JSON:
+Return ONLY valid JSON (no markdown, no backticks):
 {
   "destination": "${destination}",
   "totalDays": ${days},
@@ -77,15 +109,15 @@ Return ONLY valid JSON:
     {
       "dayNumber": 1,
       "date": "DATE",
-      "title": "TITLE",
+      "title": "SPECIFIC TITLE",
       "activities": [
         {
           "time": "09:00",
-          "name": "Activity",
+          "name": "REAL NAME (e.g., Breakfast at Fisherman's Wharf)",
           "description": "Description",
           "cost": NUMBER,
-          "duration": "2 hours",
-          "type": "activity"
+          "duration": "1 hr",
+          "type": "food"
         }
       ]
     }
