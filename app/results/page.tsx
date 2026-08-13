@@ -255,6 +255,8 @@ function ResultsContent() {
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isBooking, setIsBooking] = useState(false);
+  const [bookingStep, setBookingStep] = useState<"idle" | "processing" | "success">("idle");
+  const [processingStepIndex, setProcessingStepIndex] = useState(0);
 
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -376,6 +378,25 @@ function ResultsContent() {
 
   const handleBookTrip = () => {
     setIsBooking(true);
+    setBookingStep("idle");
+    setProcessingStepIndex(0);
+  };
+
+  const start1ClickBooking = () => {
+    setBookingStep("processing");
+    setProcessingStepIndex(0);
+
+    const steps = [0, 1, 2, 3];
+    steps.forEach((step, idx) => {
+      setTimeout(() => {
+        setProcessingStepIndex(step);
+        if (step === 3) {
+          setTimeout(() => {
+            setBookingStep("success");
+          }, 1500);
+        }
+      }, (idx + 1) * 1500);
+    });
   };
 
   const handleRegenerate = () => {
@@ -723,97 +744,276 @@ function ResultsContent() {
       <Dialog open={isBooking} onOpenChange={setIsBooking}>
         <DialogContent className="sm:max-w-md w-full h-[100dvh] max-h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:w-[95vw] overflow-y-auto p-0 border-0 shadow-2xl rounded-none sm:rounded-2xl md:rounded-3xl bg-gray-50 flex flex-col">
           <div className="p-5 md:p-8 flex-1">
-            <DialogTitle className="text-2xl font-black text-gray-900 mb-1">Complete Your Booking</DialogTitle>
-            <DialogDescription className="text-sm text-gray-500 mb-6">
-              Book each part separately on our trusted partners
-            </DialogDescription>
+            {bookingStep === "idle" && (
+              <>
+                <DialogTitle className="text-2xl font-black text-gray-900 mb-1">Complete Your Booking</DialogTitle>
+                <DialogDescription className="text-sm text-gray-500 mb-6">
+                  Book each part separately or use our instant 1-Click service.
+                </DialogDescription>
 
-            <div className="space-y-4">
-              {/* Card 1 — Flights */}
-              <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-3 animate-slide-up" style={{ animationDelay: "0.1s" }}>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                    <span className="text-blue-600 text-lg leading-none">✈️</span>
-                  </div>
-                  <div className="flex-1 text-left">
-                    <h4 className="font-bold text-gray-900">Flights</h4>
-                    <div className="text-sm text-gray-600">Delhi → {itinerary.destination.split(",")[0]}</div>
-                    <div className="text-sm text-gray-400 mt-0.5">{startDate}, {travelers} travelers</div>
-                    <div className="text-sm font-bold text-blue-600 mt-1">
-                      {formatINR(getCategoryAmount(itinerary, "transport", "flight"))} total
+                {/* Instant 1-Click Booking Banner */}
+                <div 
+                  className="bg-gradient-to-r from-orange-500 via-pink-500 to-red-500 p-0.5 rounded-2xl shadow-lg mb-6 cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all duration-300"
+                  onClick={start1ClickBooking}
+                >
+                  <div className="bg-slate-900/90 backdrop-blur-md rounded-[14px] p-5 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="text-left">
+                      <div className="inline-flex items-center gap-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1">
+                        <Zap className="w-3 h-3 animate-pulse text-yellow-300 fill-yellow-300" /> RECOMMENDED
+                      </div>
+                      <h3 className="text-lg font-black text-white">Instant 1-Click Book</h3>
+                      <p className="text-xs text-gray-300 mt-1 leading-relaxed">Secure flights, hotel reservation & activities automatically in one secure checkout.</p>
                     </div>
+                    <Button 
+                      className="bg-white hover:bg-gray-100 text-slate-900 font-extrabold shrink-0 shadow-lg px-5 py-2.5 rounded-xl h-auto border-0 text-xs"
+                    >
+                      Book All Now →
+                    </Button>
                   </div>
                 </div>
-                <Button 
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-11 rounded-xl"
-                  onClick={() => window.open("https://www.makemytrip.com", "_blank")}
-                >
-                  Book on MakeMyTrip →
-                </Button>
-              </div>
 
-              {/* Card 2 — Hotels */}
-              <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-3 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
-                    <span className="text-orange-600 text-lg leading-none">🏨</span>
-                  </div>
-                  <div className="flex-1 text-left">
-                    <h4 className="font-bold text-gray-900">Hotels</h4>
-                    <div className="text-sm text-gray-600">{itinerary.destination.split(",")[0]} · {startDate} – {endDate}</div>
-                    <div className="text-sm text-gray-400 mt-0.5">1 room, {travelers} guests</div>
-                    <div className="text-sm font-bold text-orange-600 mt-1">
-                      {formatINR(Math.round(getCategoryAmount(itinerary, "accommodation", "hotel") / Math.max(1, itinerary.duration)))} per night
+                <div className="space-y-4">
+                  {/* Card 1 — Flights */}
+                  <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-3 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                        <span className="text-blue-600 text-lg leading-none">✈️</span>
+                      </div>
+                      <div className="flex-1 text-left">
+                        <h4 className="font-bold text-gray-900">Flights</h4>
+                        <div className="text-sm text-gray-600">Delhi → {itinerary.destination.split(",")[0]}</div>
+                        <div className="text-sm text-gray-400 mt-0.5">{startDate}, {travelers} travelers</div>
+                        <div className="text-sm font-bold text-blue-600 mt-1">
+                          {formatINR(getCategoryAmount(itinerary, "transport", "flight"))} total
+                        </div>
+                      </div>
                     </div>
+                    <Button 
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-11 rounded-xl"
+                      onClick={() => window.open("https://www.makemytrip.com", "_blank")}
+                    >
+                      Book on MakeMyTrip →
+                    </Button>
+                  </div>
+
+                  {/* Card 2 — Hotels */}
+                  <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-3 animate-slide-up" style={{ animationDelay: "0.2s" }}>
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+                        <span className="text-orange-600 text-lg leading-none">🏨</span>
+                      </div>
+                      <div className="flex-1 text-left">
+                        <h4 className="font-bold text-gray-900">Hotels</h4>
+                        <div className="text-sm text-gray-600">{itinerary.destination.split(",")[0]} · {startDate} – {endDate}</div>
+                        <div className="text-sm text-gray-400 mt-0.5">1 room, {travelers} guests</div>
+                        <div className="text-sm font-bold text-orange-600 mt-1">
+                          {formatINR(Math.round(getCategoryAmount(itinerary, "accommodation", "hotel") / Math.max(1, itinerary.duration)))} per night
+                        </div>
+                      </div>
+                    </div>
+                    <Button 
+                      className="w-full bg-[#FF6B35] hover:bg-[#e55a29] text-white font-bold h-11 rounded-xl"
+                      onClick={() => window.open("https://www.booking.com", "_blank")}
+                    >
+                      Book on Booking.com →
+                    </Button>
+                  </div>
+
+                  {/* Card 3 — Activities */}
+                  <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-3 animate-slide-up" style={{ animationDelay: "0.3s" }}>
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                        <span className="text-green-600 text-lg leading-none">🎯</span>
+                      </div>
+                      <div className="flex-1 text-left">
+                        <h4 className="font-bold text-gray-900">Activities & Experiences</h4>
+                        <div className="text-sm text-gray-600">{countPlannedActivities(itinerary)} experiences planned</div>
+                        <div className="text-sm text-gray-400 mt-0.5">Across {itinerary.duration} days</div>
+                        <div className="text-sm font-bold text-green-600 mt-1">
+                          {formatINR(getCategoryAmount(itinerary, "activities"))} total
+                        </div>
+                      </div>
+                    </div>
+                    <Button 
+                      className="w-full bg-[#00A878] hover:bg-[#008f65] text-white font-bold h-11 rounded-xl"
+                      onClick={() => window.open("https://www.thrillophilia.com", "_blank")}
+                    >
+                      Explore on Thrillophilia →
+                    </Button>
                   </div>
                 </div>
-                <Button 
-                  className="w-full bg-[#FF6B35] hover:bg-[#e55a29] text-white font-bold h-11 rounded-xl"
-                  onClick={() => window.open("https://www.booking.com", "_blank")}
-                >
-                  Book on Booking.com →
-                </Button>
-              </div>
 
-              {/* Card 3 — Activities */}
-              <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-3 animate-slide-up" style={{ animationDelay: "0.3s" }}>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                    <span className="text-green-600 text-lg leading-none">🎯</span>
+                <div className="mt-6 border-t border-gray-200 pt-5 text-center">
+                  <div className="font-black text-gray-900 text-lg mb-1">
+                    Total planned: {itinerary ? formatINR(itinerary.usedBudget) : "—"}
                   </div>
-                  <div className="flex-1 text-left">
-                    <h4 className="font-bold text-gray-900">Activities & Experiences</h4>
-                    <div className="text-sm text-gray-600">{countPlannedActivities(itinerary)} experiences planned</div>
-                    <div className="text-sm text-gray-400 mt-0.5">Across {itinerary.duration} days</div>
-                    <div className="text-sm font-bold text-green-600 mt-1">
-                      {formatINR(getCategoryAmount(itinerary, "activities"))} total
-                    </div>
+                  <p className="text-sm text-gray-400 mb-4">
+                    Each partner opens in a new tab. Book in any order you prefer.
+                  </p>
+                  <Button 
+                    variant="outline"
+                    className="w-full h-11 font-bold text-gray-600 border-gray-200 hover:bg-gray-100 rounded-xl bg-gray-100/50"
+                    onClick={() => setIsBooking(false)}
+                  >
+                    I&apos;ll Book Later
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {bookingStep === "processing" && (
+              <div className="flex flex-col items-center justify-center py-10 px-4 text-center min-h-[400px]">
+                <DialogTitle className="sr-only">Securing Booking</DialogTitle>
+                <div className="relative w-24 h-24 mb-8 flex items-center justify-center">
+                  <div className="absolute inset-0 rounded-full border-4 border-orange-500/20 border-t-orange-500 animate-spin" />
+                  <div className="absolute inset-2 bg-gradient-to-tr from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-white shadow-lg">
+                    <Plane className="w-10 h-10 animate-pulse" />
                   </div>
                 </div>
-                <Button 
-                  className="w-full bg-[#00A878] hover:bg-[#008f65] text-white font-bold h-11 rounded-xl"
-                  onClick={() => window.open("https://www.thrillophilia.com", "_blank")}
-                >
-                  Explore on Thrillophilia →
-                </Button>
-              </div>
-            </div>
 
-            <div className="mt-6 border-t border-gray-200 pt-5 text-center">
-              <div className="font-black text-gray-900 text-lg mb-1">
-                Total planned: {itinerary ? formatINR(itinerary.usedBudget) : "—"}
+                <h3 className="text-xl font-black text-gray-900 mb-2">Securing Your Entire Trip...</h3>
+                
+                <div className="w-full max-w-xs bg-gray-200 h-2.5 rounded-full overflow-hidden mb-6 shadow-inner">
+                  <div 
+                    className="bg-gradient-to-r from-orange-500 to-pink-500 h-full rounded-full transition-all duration-500" 
+                    style={{ width: `${(processingStepIndex + 1) * 25}%` }}
+                  />
+                </div>
+
+                <div className="w-full max-w-sm bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-4 text-left">
+                  {[
+                    { text: "✈️ Reserving flights with MakeMyTrip...", segment: "flight" },
+                    { text: "🏨 Booking stay at your selected hotels...", segment: "hotel" },
+                    { text: "🎟️ Confirming tickets for experiences...", segment: "activity" },
+                    { text: "💳 Securing payment transaction...", segment: "payment" },
+                  ].map((step, idx) => {
+                    const isDone = idx < processingStepIndex;
+                    const isCurrent = idx === processingStepIndex;
+                    return (
+                      <div key={idx} className="flex items-center gap-3 transition-opacity duration-300">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 border ${
+                          isDone 
+                            ? "bg-green-500 border-green-500 text-white" 
+                            : isCurrent 
+                              ? "border-orange-500 text-orange-500 bg-orange-50" 
+                              : "border-gray-200 text-gray-300"
+                        }`}>
+                          {isDone ? (
+                            <span className="text-xs font-bold">✓</span>
+                          ) : isCurrent ? (
+                            <span className="w-2 h-2 rounded-full bg-orange-500 animate-ping" />
+                          ) : (
+                            <span className="text-[10px] font-bold">{idx + 1}</span>
+                          )}
+                        </div>
+                        <span className={`text-sm font-semibold ${
+                          isDone 
+                            ? "text-gray-500 line-through" 
+                            : isCurrent 
+                              ? "text-gray-900 font-extrabold" 
+                              : "text-gray-400"
+                        }`}>
+                          {step.text}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <p className="text-sm text-gray-400 mb-4">
-                Each partner opens in a new tab. Book in any order you prefer.
-              </p>
-              <Button 
-                variant="outline"
-                className="w-full h-11 font-bold text-gray-600 border-gray-200 hover:bg-gray-100 rounded-xl bg-gray-100/50"
-                onClick={() => setIsBooking(false)}
-              >
-                I&apos;ll Book Later
-              </Button>
-            </div>
+            )}
+
+            {bookingStep === "success" && (
+              <div className="py-6 px-4 text-center">
+                <DialogTitle className="sr-only">Booking Confirmed</DialogTitle>
+                <div className="w-18 h-18 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600 shadow-md">
+                  <CheckCircle className="w-10 h-10" />
+                </div>
+                
+                <h3 className="text-2xl font-black text-gray-900 mb-1">Trip Confirmed! 🎉</h3>
+                <p className="text-sm text-gray-500 mb-6">Your tickets and reservations have been secured.</p>
+
+                <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden text-left relative max-w-sm mx-auto mb-6 font-sans">
+                  <div className="bg-slate-900 p-5 text-white">
+                    <div className="flex justify-between items-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">
+                      <span>Booking Voucher</span>
+                      <span className="text-orange-400 font-extrabold tracking-normal flex items-center gap-1.5">
+                        <img src="/logo-icon-white.png" alt="Logo" className="w-4 h-4 object-contain inline-block" />
+                        TRAVEL-O-PEDIA
+                      </span>
+                    </div>
+                    <h4 className="text-lg font-black">{itinerary.destination}</h4>
+                    <p className="text-xs text-gray-400 mt-1">{startDate} to {endDate} ({itinerary.duration} Days)</p>
+                  </div>
+
+                  <div className="p-5 space-y-4.5">
+                    <div className="grid grid-cols-2 gap-4 border-b border-gray-100 pb-4">
+                      <div>
+                        <div className="text-[10px] text-gray-400 uppercase font-black tracking-wider">Booking Ref</div>
+                        <div className="text-sm font-extrabold text-gray-900">TO-2026-894721</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-gray-400 uppercase font-black tracking-wider">Travelers</div>
+                        <div className="text-sm font-extrabold text-gray-900">{travelers} traveler{travelers > 1 ? "s" : ""}</div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3.5 border-b border-gray-100 pb-4">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500 font-semibold flex items-center gap-1.5">✈️ Flights (IndiGo)</span>
+                        <span className="font-extrabold text-green-600">Confirmed ✓</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500 font-semibold flex items-center gap-1.5 text-ellipsis overflow-hidden whitespace-nowrap max-w-[200px]">🏨 Stay ({itinerary.hotels[0]?.name || "Select Hotel"})</span>
+                        <span className="font-extrabold text-green-600">Confirmed ✓</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500 font-semibold flex items-center gap-1.5">🎯 Experiences ({countPlannedActivities(itinerary)} booked)</span>
+                        <span className="font-extrabold text-green-600">Confirmed ✓</span>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="text-[10px] text-gray-400 uppercase font-black tracking-wider">Total Charged</div>
+                        <div className="text-lg font-black text-slate-900">{formatINR(itinerary.usedBudget)}</div>
+                      </div>
+                      <div className="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-lg">
+                        Paid via Card
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="h-4 bg-gray-100 flex items-center justify-around overflow-hidden select-none" style={{ backgroundImage: "radial-gradient(circle, transparent 6px, #ffffff 6px)", backgroundSize: "16px 20px" }}>
+                    {Array.from({ length: 20 }).map((_, i) => (
+                      <div key={i} className="w-2.5 h-2.5 rounded-full bg-gray-50 shrink-0" />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2.5 max-w-sm mx-auto">
+                  <Button 
+                    className="w-full bg-slate-950 hover:bg-slate-900 text-white font-bold h-11 rounded-xl flex items-center justify-center gap-2"
+                    onClick={() => {
+                      alert("Vouchers & tickets PDF has been generated and sent to your email!");
+                    }}
+                  >
+                    <Download className="w-4 h-4" />
+                    Download PDF Tickets
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className="w-full h-11 font-bold text-gray-600 border-gray-200 hover:bg-gray-100 rounded-xl"
+                    onClick={() => {
+                      setIsBooking(false);
+                      router.push("/dashboard");
+                    }}
+                  >
+                    Go to My Dashboard
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>

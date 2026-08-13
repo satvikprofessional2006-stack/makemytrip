@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import {
-  Globe, Phone, Mail, MapPin, MessageCircle, Share2, Radio, PlayCircle, Link2,
+  Phone, Mail, MapPin, MessageCircle, Share2, Radio, PlayCircle, Link2,
   Plane, CreditCard, Shield, Clock, Star, ArrowRight,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -92,15 +92,14 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-6 gap-10">
           {/* Brand column */}
           <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-5">
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg, #0055CC, #00A878)" }}
-              >
-                <Globe className="w-5 h-5 text-white" />
-              </div>
+            <Link href="/" className="flex items-center gap-2.5 mb-5 group">
+              <img
+                src="/logo-icon-white.png"
+                alt="Travel-o-pedia Logo"
+                className="w-9 h-9 object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-200"
+              />
               <span className="text-xl font-black text-white">
-                TRAVE-<span style={{ color: "#FF6B35" }}>O-PEDIA</span>
+                TRAVEL-<span style={{ color: "#0055FF" }}>O-PEDIA</span>
               </span>
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-5">
@@ -119,7 +118,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2.5 text-sm text-gray-400">
                 <Mail className="w-4 h-4 text-orange-400 shrink-0" />
-                hello@trave-o-pedia.in
+                hello@travel-o-pedia.in
               </div>
             </div>
 
@@ -178,7 +177,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} TRAVE-O-PEDIA Pvt. Ltd. · All rights reserved · Made with ❤️ in India
+            © {new Date().getFullYear()} TRAVEL-O-PEDIA Pvt. Ltd. · All rights reserved · Made with ❤️ in India
           </p>
           <div className="flex items-center gap-4">
             {/* Payment logos */}

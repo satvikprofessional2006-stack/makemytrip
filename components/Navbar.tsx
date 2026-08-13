@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Globe, Menu, X, Plane, LayoutDashboard, LogOut, User as UserIcon } from "lucide-react";
+import { Menu, X, Plane, LayoutDashboard, LogOut, User as UserIcon } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { logout } from "@/app/login/actions";
@@ -58,19 +58,20 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-18">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200"
-              style={{ background: "linear-gradient(135deg, #0055CC, #00A878)" }}
-            >
-              <Globe className="w-5 h-5 text-white" />
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="relative w-9 h-9 flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
+              <img
+                src={scrolled || !isHome ? "/logo-icon.png" : "/logo-icon-white.png"}
+                alt="Travel-o-pedia Logo"
+                className="w-9 h-9 object-contain drop-shadow-md"
+              />
             </div>
             <span
               className={`text-xl font-black tracking-tight transition-colors duration-300 ${
                 scrolled || !isHome ? "text-gray-900" : "text-white drop-shadow-lg"
               }`}
             >
-              TRAVE-<span style={{ color: "#FF6B35" }}>O-PEDIA</span>
+              TRAVEL-<span style={{ color: "#0055FF" }}>O-PEDIA</span>
             </span>
           </Link>
 

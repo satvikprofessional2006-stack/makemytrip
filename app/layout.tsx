@@ -9,14 +9,19 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Trave-o-pedia - Plan Your Dream Journey",
+  title: "Travel-o-pedia - Plan Your Dream Journey",
   description:
     "AI-powered travel planning. Discover destinations, get day-wise itineraries, budget breakdowns, and save your dream trips — all in one place.",
   keywords: ["travel", "itinerary", "vacation planner", "AI travel", "budget travel", "India travel"],
   openGraph: {
-    title: "Trave-o-pedia - Plan Your Dream Journey",
+    title: "Travel-o-pedia - Plan Your Dream Journey",
     description: "AI-powered travel planning for your dream vacations",
     type: "website",
+  },
+  icons: {
+    icon: "/logo-icon.png",
+    shortcut: "/favicon.ico",
+    apple: "/logo-icon.png",
   },
 };
 

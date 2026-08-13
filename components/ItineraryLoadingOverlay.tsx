@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Plane } from "lucide-react";
 
 const loadingTexts = [
   "Analyzing your destination...",
@@ -42,8 +41,12 @@ export default function ItineraryLoadingOverlay() {
           style={{ animationDuration: "2s" }}
         />
         <div className="absolute inset-0 bg-blue-500/40 rounded-full animate-pulse" />
-        <div className="relative w-full h-full bg-blue-600 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.6)]">
-          <Plane className="w-10 h-10 text-white animate-bounce" />
+        <div className="relative w-full h-full bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full flex items-center justify-center p-4 shadow-[0_0_40px_rgba(37,99,235,0.6)]">
+          <img
+            src="/logo-icon-white.png"
+            alt="Loading..."
+            className="w-12 h-12 object-contain animate-pulse"
+          />
         </div>
       </div>
 

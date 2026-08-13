@@ -29,7 +29,7 @@ export function ShareTrip({
 }: ShareTripProps) {
   const [copied, setCopied] = useState(false);
 
-  const shareText = `Check out my AI-planned trip to ${destination}! ${days} days, ${travelers} travelers, ₹${budget.toLocaleString('en-IN')} budget. Planned with Trave-o-pedia 🌍✈️`;
+  const shareText = `Check out my AI-planned trip to ${destination}! ${days} days, ${travelers} travelers, ₹${budget.toLocaleString('en-IN')} budget. Planned with Travel-o-pedia 🌍✈️`;
 
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(tripUrl)}`;
   const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(tripUrl)}`;
@@ -50,7 +50,7 @@ export function ShareTrip({
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({
-          title: `${destination} Trip by Trave-o-pedia`,
+          title: `${destination} Trip by Travel-o-pedia`,
           text: shareText,
           url: tripUrl
         });

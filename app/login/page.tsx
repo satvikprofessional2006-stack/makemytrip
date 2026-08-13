@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { login, signup, signInWithGoogle } from "./actions";
-import { Globe } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -47,11 +46,13 @@ export default function LoginPage() {
       <div className="relative w-full max-w-md p-10 bg-white border border-slate-100 rounded-[2rem] shadow-[0_20px_50px_rgba(0,85,204,0.04)]">
         <div className="flex flex-col items-center mb-8">
           <Link href="/" className="flex items-center gap-3 mb-6 group transition-transform duration-300 hover:scale-[1.02]">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md bg-gradient-to-br from-[#0055CC] to-[#00A878]">
-              <Globe className="w-5 h-5 text-white" />
-            </div>
+            <img
+              src="/logo-icon.png"
+              alt="Travel-o-pedia Logo"
+              className="w-10 h-10 object-contain drop-shadow-sm"
+            />
             <span className="text-2xl font-black text-gray-900 tracking-tight">
-              trave<span style={{ color: "#FF6B35" }}>-o-</span>pedia
+              travel<span style={{ color: "#0055FF" }}>-o-</span>pedia
             </span>
           </Link>
           <h1 className="text-2xl font-black text-gray-900 tracking-tight text-center">

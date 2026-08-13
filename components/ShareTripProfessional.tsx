@@ -24,7 +24,7 @@ export function ShareTripProfessional({
 }: ShareTripProps) {
   const [copied, setCopied] = useState(false);
 
-  const shareText = `Check out my AI-planned trip to ${destination}! ${days} days, ${travelers} travelers, ₹${budget.toLocaleString('en-IN')} budget. Planned with Trave-o-pedia 🌍✈️`;
+  const shareText = `Check out my AI-planned trip to ${destination}! ${days} days, ${travelers} travelers, ₹${budget.toLocaleString('en-IN')} budget. Planned with Travel-o-pedia 🌍✈️`;
 
   const shareLinks = {
     whatsapp: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + tripUrl)}`,
